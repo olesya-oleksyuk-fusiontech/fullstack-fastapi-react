@@ -1,20 +1,36 @@
-import imp
-from operator import imod
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy.orm import Session
+
+import models
+from database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
 
+
+models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-origins = ['https://localhost:3000']
+# an independent database session/connection per request,
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+origins = ['http://localhost:3000', "localhost:3000"]
 
 app.add_middleware(
-  CORSMiddleware,
-  allow_origins=origins,
-  allow_credentials = True,
-  allow_methods=["*"],
-  allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+
 @app.get("/")
-def read_root():
-  return {"Ping":"Pong"}
+async def read_root():
+    return {"Hello": "World"}
