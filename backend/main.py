@@ -37,10 +37,12 @@ async def read_root():
     return {"Hello": "World"}
 
 
-@app.get("/products/", response_model=List[schemas.Product])
-def read_products(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    products = crud.get_products(db, skip=skip, limit=limit)
-    return products
+@app.get("/products/", response_model=schemas.ProductsDisplay)
+def read_products(page: int = 1, db: Session = Depends(get_db)):
+    page_size = 8
+    products = crud.get_products(db, skip=page_size * (page - 1), limit=page_size)
+    count = crud.count_products(db)
+    return dict(products=products, page=page, pages=count / page_size)
 
 
 @app.get("/products/{product_id}", response_model=schemas.Product)

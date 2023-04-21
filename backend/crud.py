@@ -8,6 +8,10 @@ def get_product(db: Session, product_id: int):
     return db.query(models.Product).filter(models.Product.id == product_id).first()
 
 
+def count_products(db: Session):
+    return db.query(models.Product).count()
+
+
 def get_products(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Product).offset(skip).limit(limit).all()
 
