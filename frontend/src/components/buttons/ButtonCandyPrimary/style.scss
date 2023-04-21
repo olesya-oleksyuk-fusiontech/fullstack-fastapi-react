@@ -1,0 +1,34 @@
+@import 'src/styles/variables';
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+.btn-candy-primary {
+  @extend .btn;
+  background-color: inherit;
+  font-family: 'Nunito Bold', sans-serif;
+}
+
+.btn-candy-primary--dark {
+  color: $light-pink;
+  background-color: inherit;
+  border: 2px solid $light-pink;
+
+  &:hover {
+    color: $pink;
+    background-color: white;
+    border-color: white;
+  }
+}
+
+.btn-candy-primary--light {
+  background-color: $pink;
+  color: white;
+  border: none;
+
+  &:hover {
+    @extend .btn-primary, :hover;
+  }
+}
+
+.full-width {
+  width: 100%;
+}

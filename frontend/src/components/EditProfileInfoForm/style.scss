@@ -1,0 +1,15 @@
+@import 'node_modules/bootstrap/scss/bootstrap';
+
+.edit-profile__update-btn {
+  margin: 1rem calc(1.5rem + 10%);
+  @include media-breakpoint-up(sm) {
+    width: fit-content;
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+.profile-page__label-borderless {
+  width: fit-content;
+  text-align: center;
+}

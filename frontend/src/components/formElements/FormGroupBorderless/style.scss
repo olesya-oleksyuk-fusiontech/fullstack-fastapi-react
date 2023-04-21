@@ -1,0 +1,120 @@
+@import 'src/styles/variables';
+
+.label-borderless {
+  position: absolute;
+  transition: all 0.2s ease;
+
+  color: #999;
+  font-weight: normal;
+
+  // not enough space for a full-view label
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
+
+  pointer-events: none;
+}
+
+.form-group-borderless {
+  position: relative;
+  font-size: inherit;
+
+  &--light {
+    color: $pink;
+
+    .label-borderless {
+      color: $light-gray;
+    }
+  }
+
+  &--dark {
+    color: $pink;
+
+    .label-borderless {
+      color: #c18b8b;
+      font-family: 'Nunito Bold', sans-serif;
+    }
+  }
+
+  .borderless-input-box {
+    .input-borderless {
+      padding-left: 20px;
+      -webkit-text-fill-color: transparent !important;
+    }
+
+    &--light {
+    }
+
+    &--dark {
+      border-bottom: 3px solid $light-pink;
+    }
+  }
+}
+
+.form-group-borderless.used {
+  .label-borderless {
+    color: black;
+    min-width: 170px;
+    transform: scale(0.75);
+    left: -20px;
+    top: -22px;
+  }
+}
+
+.form-group-borderless:active,
+.form-group-borderless:focus-within,
+.form-group-borderless.used {
+  position: relative;
+
+  .label-borderless {
+    min-width: 170px;
+    transform: scale(0.75);
+    left: -20px;
+    top: -22px;
+  }
+
+  .label-borderless--light {
+    background-color: rgba($pinkish-beige, 0.15);
+    border-radius: 20px;
+    color: $pink;
+  }
+
+  .label-borderless--dark {
+    color: #29080f;
+    font-family: 'Nunito Bold', sans-serif;
+  }
+
+  .borderless-input-box {
+    &--light {
+      .input-borderless {
+        padding-left: 20px;
+        -webkit-text-fill-color: $light-gray !important;
+      }
+
+      .input-borderless:focus,
+      .input-borderless:focus-within {
+        -webkit-text-fill-color: $light-gray !important;
+      }
+    }
+
+    &--dark {
+      font-family: 'Nunito Bold', sans-serif;
+      border-bottom: 3px solid $light-pink;
+
+      .input-borderless {
+        font-size: inherit;
+        padding-left: 20px;
+        -webkit-text-fill-color: #c18b8b !important;
+      }
+
+      .input-borderless:focus,
+      .input-borderless:focus-within {
+        -webkit-text-fill-color: #c18b8b !important;
+      }
+    }
+    &--dark:focus-within {
+      border-bottom: 3px solid $bright-yellow;
+    }
+  }
+}

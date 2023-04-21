@@ -1,0 +1,164 @@
+@import 'node_modules/bootstrap/scss/mixins';
+@import 'node_modules/bootstrap/scss/functions';
+@import 'node_modules/bootstrap/scss/variables';
+@import 'src/styles/variables';
+
+.authorization-grid {
+  display: grid;
+  gap: 20px;
+  height: 100%;
+  width: 100%;
+}
+
+.authorization-grid__aside-img {
+  background-color: rgba($sundown, 0.34);
+}
+
+.candies-on-table {
+  background-image: url('../../assets/candyshop-login-small.png');
+  background-color: rgba($sundown, 0.34);
+}
+
+.authorization-grid__authorization-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.authorization__redirect {
+  width: fit-content;
+  margin: 1rem auto 0 auto;
+  text-align: center;
+}
+
+// Mobile version: less than 992px
+@include media-breakpoint-down(lg) {
+  .authorization-grid {
+    grid-template-rows: 40% 58%;
+    &--register-page {
+      grid-template-rows: 30% 70%;
+    }
+  }
+
+  .authorization-grid__aside-img {
+    background-color: transparent;
+  }
+
+  // interface part
+  .authorization-grid__authorization-content {
+    background: linear-gradient(
+      to bottom,
+      rgba($sundown, 0.34),
+      rgba($sundown, 0)
+    );
+    padding: 0 2rem 0 2rem;
+    border-radius: 40px;
+  }
+
+  // big picture
+  .candies-on-table {
+    height: 100%;
+    background-size: cover;
+    background-position: top;
+    border-radius: 0 0 70px 70px;
+  }
+
+  .aside-img__header-logo {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin: 0;
+    padding: 2% 5%;
+  }
+
+  .authorization-content__content-wrapper {
+    padding: 0 10%;
+  }
+
+  .authorization-content__header-logo {
+    padding: 2% 5%;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin: 0;
+  }
+}
+
+// less than ...768px
+@include media-breakpoint-down(md) {
+  .authorization-content__content-wrapper {
+    padding: 0;
+  }
+
+  .authorization__form-wrapper {
+    font-size: 1rem;
+  }
+
+  .authorization__redirect {
+    font-size: 0.9rem;
+  }
+}
+
+// between 768px ... 991px
+@include media-breakpoint-only(md) {
+  .authorization__form-wrapper {
+    font-size: 1.2rem;
+  }
+
+  .authorization__redirect {
+    font-size: 1em;
+  }
+}
+
+// Desktop version
+@include media-breakpoint-up(lg) {
+  .authorization-grid {
+    gap: 0;
+    grid-template-rows: none;
+    grid-template-columns: 50% 35rem;
+
+    justify-content: center;
+    padding: 3rem 0;
+  }
+
+  // interface part
+  .authorization-grid__authorization-content {
+    background: rgba($sundown, 0.34);
+    background: linear-gradient(
+      to right,
+      rgba($sundown, 0.34),
+      rgba($sundown, 0)
+    );
+  }
+
+  // big picture
+  .candies-on-table {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: 0 70px 70px 0;
+  }
+
+  .authorization-content__content-wrapper {
+    padding: 0 4rem;
+  }
+
+  .authorization-content__header-logo {
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .authorization-content__human-logo {
+    width: fit-content;
+    margin: 2.5rem auto 4rem auto;
+  }
+
+  .authorization__form-wrapper {
+    font-size: 1.25em;
+  }
+
+  .authorization__redirect {
+    font-size: 1em;
+  }
+}

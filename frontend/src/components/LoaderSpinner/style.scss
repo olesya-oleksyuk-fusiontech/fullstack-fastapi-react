@@ -1,0 +1,43 @@
+@import 'src/styles/variables';
+
+.loader-spinner {
+  @media (max-width: 576px) {
+    padding: 10px;
+  }
+  width: 90px;
+  height: 90px;
+  padding: 30px;
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+  background: $light-green;
+
+  --_m: conic-gradient(#0000 10%, #000), linear-gradient(#000 0% 0%) content-box;
+  -webkit-mask: var(--_m);
+  mask: var(--_m);
+  -webkit-mask-composite: source-out;
+  mask-composite: subtract;
+  animation: s3 0.3s infinite linear;
+}
+@keyframes s3 {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.loader-wrapper {
+  display: flex;
+  height: 100%;
+
+  &--center-page {
+    padding-bottom: 24px;
+
+    .loader-spinner {
+      margin: auto;
+    }
+  }
+
+  &--center {
+    justify-content: center;
+  }
+}
