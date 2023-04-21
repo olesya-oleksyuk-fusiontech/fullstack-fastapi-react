@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
@@ -38,10 +37,19 @@ async def read_root():
 
 
 @app.get("/products/", response_model=schemas.ProductsDisplay)
-def read_products(page: int = 1, db: Session = Depends(get_db)):
+def read_products(page: int = 1, keyword: str = '', db: Session = Depends(get_db)):
     page_size = 8
     products = crud.get_products(db, skip=page_size * (page - 1), limit=page_size)
     count = crud.count_products(db)
+    if keyword is not '':
+        products = crud.get_products_by_name(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword),
+        if len(products[0]) == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        return dict(
+            products=crud.get_products_by_name(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword),
+            page=page,
+            pages=count / page_size)
+
     return dict(products=products, page=page, pages=count / page_size)
 
 
