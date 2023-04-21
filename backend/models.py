@@ -1,6 +1,5 @@
-from typing import Text
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, Text
+from sqlalchemy.types import String, Integer, Text, Numeric
 from database import Base
 
 
@@ -14,5 +13,5 @@ class Product(Base):
     category = Column(String(20))
     description = Column(Text())
     rating = Column(Integer)
-    price = Column(Integer)
+    price = Column(Numeric, nullable=False)
     countInStock = Column(Integer)

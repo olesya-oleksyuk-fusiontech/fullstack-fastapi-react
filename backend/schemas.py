@@ -2,14 +2,14 @@ from pydantic import BaseModel
 
 
 class Product(BaseModel):
-    id = int
-    name = str
-    image = str
-    brand = str
-    category = str
-    description = str
+    id: int
+    name: str
+    image: str
+    brand: str
+    category: str
+    description: str
     rating: int
-    price: int
+    price: float
     countInStock: int
 
     class Config:
