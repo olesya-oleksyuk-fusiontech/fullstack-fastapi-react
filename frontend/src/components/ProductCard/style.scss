@@ -1,0 +1,16 @@
+@import './src/styles/App';
+
+@include media-breakpoint-down(sm) {
+  .card-product {
+    height: 95% !important;
+  }
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+
+  .card-text {
+    margin-top: auto;
+  }
+}
