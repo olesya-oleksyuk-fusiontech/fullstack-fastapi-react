@@ -5,17 +5,16 @@ from sqlalchemy.types import String, Integer, Text, Numeric, DateTime
 from database import Base
 from datetime import datetime
 
+metadata = Base.metadata
 
 class Review(Base):
     __tablename__ = 'review'
     id = Column(Integer, primary_key=True, index=True)
     rating = Column(Integer, nullable=False)
-    comment = Column(String)
+    comment = Column(String(100))
     created_on = Column(DateTime(), default=datetime.utcnow)
 
     product_id = Column(Integer, ForeignKey("product.id"))
-    product = relationship("Product", back_populates="reviews")
-
 
 class Product(Base):
     __tablename__ = "product"
