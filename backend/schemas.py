@@ -40,3 +40,39 @@ class ProductsDisplay(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+    password: str
+    isAdmin: bool
+    createdAt: datetime
+    updatedAt: datetime
+    reviews: Optional[List[Review]] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UserDisplay(BaseModel):
+    id: int
+    name: str
+    email: str
+    isAdmin: bool
+    createdAt: datetime
+    updatedAt: datetime
+    reviews: Optional[List[Review]] = []
+
+    class Config:
+        orm_mode = True
+
+
+class UserRegister(BaseModel):
+    name: str
+    email: str
+    password: str
+
+    class Config:
+        orm_mode = True

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 import models
 import schemas
+from hash import Hash
 
 
 def filtration(query: Query, keyword: str = ''):
@@ -33,3 +34,23 @@ def create_product(db: Session, item: schemas.Product):
     db.commit()
     db.refresh(db_product)
     return db_product
+
+
+def create_user(db: Session, user: schemas.UserRegister):
+    new_user = models.User(
+        name=user.name,
+        email=user.email,
+        password=Hash.bcrypt(user.password)
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+def get_all_users(db: Session):
+    return db.query(models.User).all()
+
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()

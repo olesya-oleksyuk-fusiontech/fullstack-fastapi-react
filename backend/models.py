@@ -1,11 +1,12 @@
 from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Column
-from sqlalchemy.types import String, Integer, Text, Numeric, DateTime
+from sqlalchemy.types import String, Integer, Text, Numeric, DateTime, Boolean
 from database import Base
 from datetime import datetime
 
 metadata = Base.metadata
+
 
 class Review(Base):
     __tablename__ = 'review'
@@ -15,6 +16,8 @@ class Review(Base):
     created_on = Column(DateTime(), default=datetime.utcnow)
 
     product_id = Column(Integer, ForeignKey("product.id"))
+    user_id = Column(Integer, ForeignKey("user.id"))
+
 
 class Product(Base):
     __tablename__ = "product"
@@ -34,3 +37,17 @@ class Product(Base):
 
 class ProductCreate(Product):
     pass
+
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(50))
+    email = Column(String(30))
+    password = Column(String(200))
+    isAdmin = Column(Boolean, default=False)
+    isActive = Column(Boolean, default=True)
+    createdAt = Column(TIMESTAMP, default=datetime.utcnow)
+    updatedAt = Column(TIMESTAMP, default=datetime.utcnow)
+    reviews = relationship('Review', backref='user')
+
