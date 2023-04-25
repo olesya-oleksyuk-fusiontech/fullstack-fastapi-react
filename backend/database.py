@@ -13,3 +13,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # inherit from this class to create each of the database models or classes (the ORM models)
 Base = declarative_base()
 metadata = Base.metadata
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()

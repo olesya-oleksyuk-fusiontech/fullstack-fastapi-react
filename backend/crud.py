@@ -1,4 +1,4 @@
-from fastapi import Query
+from fastapi import Query, HTTPException, status
 from sqlalchemy.orm import Session
 
 import models
@@ -54,3 +54,11 @@ def get_all_users(db: Session):
 
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
+
+
+def get_user_by_email(db: Session, email: str):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'User with email {email} not found')
+    return user

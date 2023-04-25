@@ -35,10 +35,6 @@ class Product(Base):
     reviews = relationship('Review', backref='product')
 
 
-class ProductCreate(Product):
-    pass
-
-
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)

@@ -28,12 +28,11 @@ class Product(BaseModel):
     created_on: datetime
     reviews: Optional[List[Review]] = []
 
-
     class Config:
         orm_mode = True
 
 
-class ProductsDisplay(BaseModel):
+class ProductDisplay(BaseModel):
     products: List[Product]
     page: int
     pages: int
@@ -73,6 +72,14 @@ class UserRegister(BaseModel):
     name: str
     email: str
     password: str
+
+    class Config:
+        orm_mode = True
+
+
+class ProductAuth(BaseModel):
+    data: Product
+    current_user: UserDisplay
 
     class Config:
         orm_mode = True
