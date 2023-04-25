@@ -74,6 +74,7 @@ def read_product(product_id: int,
                  db: Session = Depends(get_db),
                  token: str = Depends(oauth2_schema)
                  ):
+    oauth2.get_current_user(token, db)
     db_product = crud.get_product(db, product_id=product_id)
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
