@@ -1,13 +1,15 @@
 from typing import Optional, List
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from starlette import status
 
 import models
 import schemas
 import crud
-from database import SessionLocal, engine
+from auth import oauth2
+from database import SessionLocal
 from fastapi.middleware.cors import CORSMiddleware
 
 from hash import Hash
@@ -55,6 +57,24 @@ def read_product(product_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Product not found")
     return db_product
 
+@app.post('/token')
+def get_token(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.name == request.username).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid credentials")
+    if not Hash.verify(user.password, request.password):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect password")
+
+    access_token = oauth2.create_access_token(data={'sub': user.name})
+
+    return {
+        'access_token': access_token,
+        'token_type': 'bearer',
+        'user_id': user.id,
+        'name': user.name,
+        'password': user.password,
+        'isAdmin': user.isAdmin,
+    }
 
 @app.post("/products", response_model=schemas.Product, tags=['products'])
 def create_product(
