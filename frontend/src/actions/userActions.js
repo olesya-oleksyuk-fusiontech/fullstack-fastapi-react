@@ -33,17 +33,19 @@ export const login = (email, password) => async (dispatch) => {
       type: USER_LOGIN_REQUEST,
     });
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
     const { data } = await axios.post(
-      '/api/users/login',
-      { email, password },
-      config,
+      'http://localhost:8000/login',
+      new URLSearchParams({
+        username: email,
+        password,
+      }),
+      {
+        headers: {
+          accept: 'application/json',
+        },
+      },
     );
+
 
     dispatch({
       type: USER_LOGIN_SUCCESS,
@@ -86,7 +88,7 @@ export const register = (name, email, password) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      '/api/users',
+      'http://localhost:8000/users',
       { name, email, password },
       config,
     );

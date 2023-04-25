@@ -43,13 +43,13 @@ const Product = () => {
       return (<NoFoundProduct />);
     }
     if (error) {
-      return (<Message variant="danger">{error}</Message>);
+      return (<Message variant="danger">{error.message}</Message>);
     }
-    if (loading || (currentProductId != productId)) {
+    if (loading || (currentProductId !== productId)) {
       return <LoaderSpinner pageCenter />;
     }
 
-    if (currentProductId && product.id == productId) {
+    if (currentProductId && product.id === productId) {
       return (
         <>
           <Row>
@@ -88,15 +88,15 @@ const Product = () => {
               />
             </Col>
           </Row>
-          {/*<Row>*/}
-          {/*  <Col md={6} className="my-3">*/}
-          {/*    <ReviewsSection*/}
-          {/*      reviews={product.reviews}*/}
-          {/*      productId={productId}*/}
-          {/*      isLoggedIn={userInfo}*/}
-          {/*    />*/}
-          {/*  </Col>*/}
-          {/*</Row>*/}
+          {/* <Row> */}
+          {/*  <Col md={6} className="my-3"> */}
+          {/*    <ReviewsSection */}
+          {/*      reviews={product.reviews} */}
+          {/*      productId={productId} */}
+          {/*      isLoggedIn={userInfo} */}
+          {/*    /> */}
+          {/*  </Col> */}
+          {/* </Row> */}
         </>
       );
     }

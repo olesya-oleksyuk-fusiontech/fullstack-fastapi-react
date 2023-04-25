@@ -54,17 +54,32 @@ export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) 
   }
 };
 
-export const listProductDetails = (id) => async (dispatch) => {
+export const listProductDetails = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
 
-    const { data } = await axios.get(`http://localhost:8000/products/${id}`);
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    console.log('Bearer', userInfo?.token)
+
+    const { data } = await axios.get(`http://localhost:8000/products/${id}`, {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.token && null}`,
+      },
+    });
+
+    console.log(data)
+
 
     dispatch({
       type: PRODUCT_DETAILS_SUCCESS,
       payload: data,
     });
   } catch (e) {
+    console.log(e)
     console.log(e.response.data.message);
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
