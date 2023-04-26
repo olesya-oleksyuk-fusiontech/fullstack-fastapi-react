@@ -62,3 +62,10 @@ def get_user_by_email(db: Session, email: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'User with email {email} not found')
     return user
+
+
+def update_user(db: Session, email: str, new_user: schemas.UserUpdate):
+    update_data = new_user.dict(exclude_unset=True)
+    user = db.query(models.User).filter(models.User.email == email).update(update_data)
+    db.commit()
+    return user
