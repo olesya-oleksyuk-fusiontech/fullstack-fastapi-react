@@ -10,7 +10,6 @@ import models
 import schemas
 import crud
 from auth import oauth2
-from auth.oauth2 import oauth2_schema
 from database import get_db
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -59,11 +58,12 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     access_token = oauth2.create_access_token(data={'sub': user.email})
 
     return {
-        'token': access_token,
         '_id': user.id,
         'name': user.name,
         'email': user.email,
         'isAdmin': user.isAdmin,
+        'access_token': access_token,
+        'token_type': 'bearer',
     }
 
 
@@ -72,9 +72,8 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
          tags=['products'])
 def read_product(product_id: int,
                  db: Session = Depends(get_db),
-                 token: str = Depends(oauth2_schema)
+                 current_user: schemas.User = Depends(oauth2.get_current_user)
                  ):
-    oauth2.get_current_user(token, db)
     db_product = crud.get_product(db, product_id=product_id)
     if db_product is None:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -97,11 +96,12 @@ def register_user(
     access_token = oauth2.create_access_token(data={'sub': user.email})
 
     return {
-        'token': access_token,
         '_id': new_user.id,
         'name': new_user.name,
         'email': new_user.email,
         'isAdmin': new_user.isAdmin,
+        'access_token': access_token,
+        'token_type': 'bearer',
     }
 
 
