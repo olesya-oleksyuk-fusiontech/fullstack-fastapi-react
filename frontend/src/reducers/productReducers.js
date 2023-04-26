@@ -16,6 +16,7 @@ import {
   PRODUCT_DELETE_SUCCESS,
   PRODUCT_DETAILS_FAIL,
   PRODUCT_DETAILS_REQUEST,
+  PRODUCT_DETAILS_RESET,
   PRODUCT_DETAILS_SUCCESS,
   PRODUCT_LIST_FAIL,
   PRODUCT_LIST_REQUEST,
@@ -69,6 +70,8 @@ export const productDetailsReducer = (
       return { loading: false, error: action.payload };
     case PRODUCT_NEW_IMAGE:
       return { ...state, product: { ...state.product, image: action.payload } };
+    case PRODUCT_DETAILS_RESET:
+      return { ...state, error: '' };
     default:
       return state;
   }
