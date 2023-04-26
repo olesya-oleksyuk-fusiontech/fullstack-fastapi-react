@@ -127,14 +127,12 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const config = {
+    const { data } = await axios.get(`http://localhost:8000/users/${id}`, {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
-    };
-
-    const { data } = await axios.get(`/api/users/${id}`, config);
+    });
 
     dispatch({
       type: USER_DETAILS_SUCCESS,
@@ -162,14 +160,17 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
-      },
-    };
+    console.log('user', user);
 
-    const { data } = await axios.put('/api/users/profile', user, config);
+
+    const { data } = await axios.patch('http://localhost:8000/users/profile', user, {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
+      },
+    });
+
+    // const { data } = await axios.put('/api/users/profile', user, config);
 
     dispatch({
       type: USER_UPDATE_PROFILE_SUCCESS,
