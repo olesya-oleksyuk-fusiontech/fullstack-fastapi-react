@@ -14,7 +14,7 @@ oauth2_schema = OAuth2PasswordBearer(tokenUrl="token")
 
 SECRET_KEY = SECRET_KEY
 ALGORITHM = JWT_ALGORITHM
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 1000
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):

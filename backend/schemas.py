@@ -68,6 +68,16 @@ class UserDisplay(BaseModel):
         orm_mode = True
 
 
+class UserDetails(BaseModel):
+    _id: int
+    name: str
+    email: str
+    isAdmin: bool
+
+    class Config:
+        orm_mode = True
+
+
 class UserRegister(BaseModel):
     name: str
     email: str
