@@ -160,8 +160,6 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    console.log('user', user);
-
     const body = {
       ...(user.name && { name: user.name }),
       ...(user.email && { email: user.email }),

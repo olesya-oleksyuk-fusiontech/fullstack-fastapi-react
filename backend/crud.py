@@ -66,8 +66,8 @@ def get_user_by_email(db: Session, email: str):
 
 def update_user(db: Session, id: int, new_user: schemas.UserUpdate):
     update_data = new_user.dict(exclude_unset=True)
-    if update_data["password"]:
-        new_password = Hash.bcrypt(update_data["password"])
+    if 'password' in update_data:
+        new_password = Hash.bcrypt(update_data['password'])
         update_data.update({'password': new_password})
     db.query(models.User).filter(models.User.id == id).update(update_data)
     db.commit()
