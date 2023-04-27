@@ -37,7 +37,7 @@ const EditProfileInfoForm = () => {
   useEffect(() => {
     if (!userInfo) {
       history.push('/login');
-    } else if (!user?.name) {
+    } else if (!user?.name || userInfo.id !== user.id) {
       dispatch(getUserDetails('profile'));
     } else {
       setName(user.name);
@@ -59,7 +59,7 @@ const EditProfileInfoForm = () => {
       setMessage('Пароли не совпадают!');
     } else {
       dispatch(updateUserProfile({
-        id: user._id, name, email, password,
+        id: user.id, name, email, password,
       }));
     }
   };

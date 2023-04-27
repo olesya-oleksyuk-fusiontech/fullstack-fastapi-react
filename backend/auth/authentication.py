@@ -31,7 +31,7 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     access_token = oauth2.create_access_token(data={'sub': user.email})
 
     return {
-        '_id': user.id,
+        'id': user.id,
         'name': user.name,
         'email': user.email,
         'isAdmin': user.isAdmin,
