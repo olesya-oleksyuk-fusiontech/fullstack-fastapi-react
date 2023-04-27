@@ -69,7 +69,7 @@ class UserDisplay(BaseModel):
 
 
 class UserDetails(BaseModel):
-    _id: int
+    id: int
     name: str
     email: str
     isAdmin: bool
@@ -78,7 +78,16 @@ class UserDetails(BaseModel):
         orm_mode = True
 
 
-class UserUpdate(BaseModel):
+class UserUpdate(UserDetails):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    isAdmin: Optional[bool] = None
+
+    class Config:
+        orm_mode = True
+
+
+class ProfileUpdate(BaseModel):
     name: Optional[str] = None
     email: Optional[str] = None
     password: Optional[str] = None
@@ -92,14 +101,6 @@ class UserRegister(BaseModel):
     name: str
     email: str
     password: str
-
-    class Config:
-        orm_mode = True
-
-
-class ProductAuth(BaseModel):
-    data: Product
-    current_user: UserDisplay
 
     class Config:
         orm_mode = True

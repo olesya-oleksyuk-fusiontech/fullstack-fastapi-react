@@ -64,11 +64,12 @@ def get_user_by_email(db: Session, email: str):
     return user
 
 
-def update_user(db: Session, id: int, new_user: schemas.UserUpdate):
+def update_user(db: Session, user_id: int, new_user: schemas.ProfileUpdate | schemas.UserUpdate):
     update_data = new_user.dict(exclude_unset=True)
     if 'password' in update_data:
         new_password = Hash.bcrypt(update_data['password'])
         update_data.update({'password': new_password})
-    db.query(models.User).filter(models.User.id == id).update(update_data)
+    db.query(models.User).filter(models.User.id == user_id).update(update_data)
     db.commit()
-    return get_user(db, id)
+    return get_user(db, user_id)
+
