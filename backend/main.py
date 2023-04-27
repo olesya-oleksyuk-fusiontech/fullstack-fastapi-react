@@ -1,28 +1,15 @@
-from typing import Optional
+from fastapi import FastAPI
 
-from fastapi import Depends, FastAPI, HTTPException
-from sqlalchemy.orm import Session
-
-import models
-import schemas
-import crud
-from database import SessionLocal, engine
 from fastapi.middleware.cors import CORSMiddleware
+from routers import users, products
+from auth import authentication
 
-# models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+app.include_router(users.router)
+app.include_router(products.router)
+app.include_router(authentication.router)
 
-
-# an independent database session/connection per request
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-
-origins = ['http://localhost:3000', "localhost:3000"]
+origins = ['http://localhost:3000', "localhost:3000", 'http://localhost:3001', 'localhost:3001']
 
 app.add_middleware(
     CORSMiddleware,
@@ -36,26 +23,3 @@ app.add_middleware(
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
-
-
-@app.get("/products", response_model=schemas.ProductsDisplay, tags=['products'])
-def read_products(page: int = 1, keyword: Optional[str] = None, db: Session = Depends(get_db)):
-    page_size = 8
-    response = crud.get_products(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword)
-    response.update({"page": page})
-    return response
-
-
-@app.get("/products/{product_id}", response_model=schemas.Product, tags=['products'])
-def read_product(product_id: int, db: Session = Depends(get_db)):
-    db_product = crud.get_product(db, product_id=product_id)
-    if db_product is None:
-        raise HTTPException(status_code=404, detail="Product not found")
-    return db_product
-
-
-@app.post("/products", response_model=schemas.Product, tags=['products'])
-def create_product(
-        item: schemas.Product, db: Session = Depends(get_db)
-):
-    return crud.create_product(db=db, item=item)

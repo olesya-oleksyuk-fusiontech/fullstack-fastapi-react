@@ -1,8 +1,9 @@
-from fastapi import Query
+from fastapi import Query, HTTPException, status
 from sqlalchemy.orm import Session
 
 import models
 import schemas
+from hash import Hash
 
 
 def filtration(query: Query, keyword: str = ''):
@@ -33,3 +34,41 @@ def create_product(db: Session, item: schemas.Product):
     db.commit()
     db.refresh(db_product)
     return db_product
+
+
+def create_user(db: Session, user: schemas.UserRegister):
+    new_user = models.User(
+        name=user.name,
+        email=user.email,
+        password=Hash.bcrypt(user.password)
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
+
+
+def get_all_users(db: Session):
+    return db.query(models.User).all()
+
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
+
+
+def get_user_by_email(db: Session, email: str):
+    user = db.query(models.User).filter(models.User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'User with email {email} not found')
+    return user
+
+
+def update_user(db: Session, id: int, new_user: schemas.UserUpdate):
+    update_data = new_user.dict(exclude_unset=True)
+    if 'password' in update_data:
+        new_password = Hash.bcrypt(update_data['password'])
+        update_data.update({'password': new_password})
+    db.query(models.User).filter(models.User.id == id).update(update_data)
+    db.commit()
+    return get_user(db, id)

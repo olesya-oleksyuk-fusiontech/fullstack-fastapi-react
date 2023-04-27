@@ -54,11 +54,20 @@ export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) 
   }
 };
 
-export const listProductDetails = (id) => async (dispatch) => {
+export const listProductDetails = (id) => async (dispatch, getState) => {
   try {
     dispatch({ type: PRODUCT_DETAILS_REQUEST });
 
-    const { data } = await axios.get(`http://localhost:8000/products/${id}`);
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
+    const { data } = await axios.get(`http://localhost:8000/products/${id}`, {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
+      },
+    });
 
     dispatch({
       type: PRODUCT_DETAILS_SUCCESS,
@@ -92,7 +101,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
@@ -125,7 +134,7 @@ export const createProduct = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
@@ -160,7 +169,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
@@ -232,7 +241,7 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 

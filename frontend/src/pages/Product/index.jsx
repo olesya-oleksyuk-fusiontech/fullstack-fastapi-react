@@ -11,13 +11,14 @@ import Message from '../../components/Message';
 import PriceTag from '../../components/PriceTag';
 import LoaderSpinner from '../../components/LoaderSpinner';
 import ButtonReturn from '../../components/buttons/ButtonReturn';
+import ReviewsSection from '../../components/ReviewsSection';
+import NoFoundProduct from '../../components/NoFound/Product';
 
 import { toCurrency } from '../../helpers/data';
 import { CURRENCY } from '../../helpers/constants';
 
 import { listProductDetails } from '../../actions/productAction';
-import ReviewsSection from '../../components/ReviewsSection';
-import NoFoundProduct from '../../components/NoFound/Product';
+import { PRODUCT_DETAILS_RESET } from '../../constants/productConstants';
 
 const Product = () => {
   const dispatch = useDispatch();
@@ -27,6 +28,9 @@ const Product = () => {
   const redirect = location.search ? location.search.split('redirect=')[1] : '/home';
   useEffect(() => {
     dispatch(listProductDetails(productId));
+    return () => {
+      dispatch({ type: PRODUCT_DETAILS_RESET });
+    };
   }, [productId]);
 
   const productDetails = useSelector((state) => state.productDetails);
@@ -43,13 +47,13 @@ const Product = () => {
       return (<NoFoundProduct />);
     }
     if (error) {
-      return (<Message variant="danger">{error}</Message>);
+      return (<Message variant="danger">{error.message}</Message>);
     }
-    if (loading || (currentProductId != productId)) {
+    if (loading || (currentProductId !== +productId)) {
       return <LoaderSpinner pageCenter />;
     }
 
-    if (currentProductId && product.id == productId) {
+    if (currentProductId && product.id === +productId) {
       return (
         <>
           <Row>
@@ -88,15 +92,15 @@ const Product = () => {
               />
             </Col>
           </Row>
-          {/*<Row>*/}
-          {/*  <Col md={6} className="my-3">*/}
-          {/*    <ReviewsSection*/}
-          {/*      reviews={product.reviews}*/}
-          {/*      productId={productId}*/}
-          {/*      isLoggedIn={userInfo}*/}
-          {/*    />*/}
-          {/*  </Col>*/}
-          {/*</Row>*/}
+          {/* <Row> */}
+          {/*  <Col md={6} className="my-3"> */}
+          {/*    <ReviewsSection */}
+          {/*      reviews={product.reviews} */}
+          {/*      productId={productId} */}
+          {/*      isLoggedIn={userInfo} */}
+          {/*    /> */}
+          {/*  </Col> */}
+          {/* </Row> */}
         </>
       );
     }

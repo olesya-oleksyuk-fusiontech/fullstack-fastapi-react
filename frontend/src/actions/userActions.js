@@ -33,16 +33,17 @@ export const login = (email, password) => async (dispatch) => {
       type: USER_LOGIN_REQUEST,
     });
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
-
     const { data } = await axios.post(
-      '/api/users/login',
-      { email, password },
-      config,
+      'http://localhost:8000/login',
+      new URLSearchParams({
+        username: email,
+        password,
+      }),
+      {
+        headers: {
+          accept: 'application/json',
+        },
+      },
     );
 
     dispatch({
@@ -86,7 +87,7 @@ export const register = (name, email, password) => async (dispatch) => {
     };
 
     const { data } = await axios.post(
-      '/api/users',
+      'http://localhost:8000/users',
       { name, email, password },
       config,
     );
@@ -126,14 +127,12 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const config = {
+    const { data } = await axios.get(`http://localhost:8000/users/${id}`, {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
-    };
-
-    const { data } = await axios.get(`/api/users/${id}`, config);
+    });
 
     dispatch({
       type: USER_DETAILS_SUCCESS,
@@ -161,14 +160,18 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
-      },
+    const body = {
+      ...(user.name && { name: user.name }),
+      ...(user.email && { email: user.email }),
+      ...(user.password && { password: user.password }),
     };
 
-    const { data } = await axios.put('/api/users/profile', user, config);
+    const { data } = await axios.patch('http://localhost:8000/users/profile', body, {
+      headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
+      },
+    });
 
     dispatch({
       type: USER_UPDATE_PROFILE_SUCCESS,
@@ -211,7 +214,7 @@ export const listUsers = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
@@ -245,7 +248,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
@@ -277,7 +280,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo.access_token}`,
       },
     };
 
