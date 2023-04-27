@@ -2,6 +2,14 @@ from typing import List, Optional
 from datetime import datetime
 
 from pydantic import BaseModel
+from sqlalchemy.orm import Relationship
+
+
+class ReviewOwner(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
 
 
 class Review(BaseModel):
@@ -11,6 +19,22 @@ class Review(BaseModel):
     created_on: datetime
     product_id: int
     user_id: int
+    user: ReviewOwner = Relationship(back_populates="user")
+
+    class Config:
+        orm_mode = True
+
+
+
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+    password: str
+    isAdmin: bool
+    createdAt: datetime
+    updatedAt: datetime
+    reviews: Optional[List[Review]] = []
 
     class Config:
         orm_mode = True
@@ -28,29 +52,8 @@ class Product(BaseModel):
     countInStock: int
     created_on: datetime
     reviews: Optional[List[Review]] = []
-
-    class Config:
-        orm_mode = True
-
-
-class ProductDisplay(BaseModel):
-    products: List[Product]
-    page: int
-    pages: int
-
-    class Config:
-        orm_mode = True
-
-
-class User(BaseModel):
-    id: int
-    name: str
-    email: str
-    password: str
-    isAdmin: bool
-    createdAt: datetime
-    updatedAt: datetime
-    reviews: Optional[List[Review]] = []
+    # admin who add the product
+    user: User = None
 
     class Config:
         orm_mode = True
@@ -101,6 +104,15 @@ class UserRegister(BaseModel):
 class ProductAuth(BaseModel):
     data: Product
     current_user: UserDisplay
+
+    class Config:
+        orm_mode = True
+
+
+class ProductDisplay(BaseModel):
+    products: List[Product]
+    page: int
+    pages: int
 
     class Config:
         orm_mode = True

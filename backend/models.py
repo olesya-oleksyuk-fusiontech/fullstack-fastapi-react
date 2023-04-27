@@ -19,6 +19,7 @@ class Review(Base):
     user_id = Column(Integer, ForeignKey("user.id"))
 
 
+
 class Product(Base):
     __tablename__ = "product"
     # __allow_unmapped__ = True
@@ -32,7 +33,9 @@ class Product(Base):
     price = Column(Numeric, nullable=False)
     countInStock = Column(Integer, nullable=False)
     created_on = Column(TIMESTAMP, default=datetime.utcnow)
+
     reviews = relationship('Review', backref='product')
+    user_id = Column(Integer, ForeignKey("user.id"))
 
 
 class User(Base):
@@ -45,5 +48,7 @@ class User(Base):
     isActive = Column(Boolean, default=True)
     createdAt = Column(TIMESTAMP, default=datetime.utcnow)
     updatedAt = Column(TIMESTAMP, default=datetime.utcnow)
+
     reviews = relationship('Review', backref='user')
+    products = relationship('Product', backref='user')
 

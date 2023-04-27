@@ -33,9 +33,7 @@ def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''
 
 
 def get_product(db: Session, product_id: int):
-    test = db.query(models.Product).filter(models.Product.id == product_id).join(models.Review) \
-        .join(models.User).first()
-    return test
+    return db.query(models.Product).filter(models.Product.id == product_id).first()
 
 
 def create_product(db: Session, item: schemas.Product):
