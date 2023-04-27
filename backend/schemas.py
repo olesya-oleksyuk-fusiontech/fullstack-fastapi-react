@@ -10,6 +10,7 @@ class Review(BaseModel):
     comment: str
     created_on: datetime
     product_id: int
+    user_id: int
 
     class Config:
         orm_mode = True

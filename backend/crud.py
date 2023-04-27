@@ -1,11 +1,17 @@
 import math
 
 from fastapi import Query, HTTPException, status
+from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 import models
 import schemas
 from hash import Hash
+
+
+def object_as_dict(obj):
+    return {c.key: getattr(obj, c.key)
+            for c in inspect(obj).mapper.column_attrs}
 
 
 def filtration(query: Query, keyword: str = ''):
@@ -27,7 +33,9 @@ def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''
 
 
 def get_product(db: Session, product_id: int):
-    return db.query(models.Product).filter(models.Product.id == product_id).first()
+    test = db.query(models.Product).filter(models.Product.id == product_id).join(models.Review) \
+        .join(models.User).first()
+    return test
 
 
 def create_product(db: Session, item: schemas.Product):

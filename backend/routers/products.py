@@ -20,7 +20,6 @@ router = APIRouter(
 def read_product(
         product_id: int,
         db: Session = Depends(get_db),
-        current_user: schemas.User = Depends(oauth2.get_current_user)
 ):
     db_product = crud.get_product(db, product_id=product_id)
     if db_product is None:
