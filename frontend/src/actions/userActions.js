@@ -128,12 +128,14 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const { data } = await axios.get(`http://localhost:8000/users/${id}`, {
+    const config = {
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
-    });
+    };
+
+    const { data } = await axios.get(`http://localhost:8000/users/${id}`, config);
 
     dispatch({
       type: USER_DETAILS_SUCCESS,
@@ -167,12 +169,14 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
       ...(user.password && { password: user.password }),
     };
 
-    const { data } = await axios.patch(`${baseURL}/users/profile`, body, {
+    const config = {
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
-    });
+    };
+
+    const { data } = await axios.patch(`${baseURL}/users/profile`, body, config);
 
     dispatch({
       type: USER_UPDATE_PROFILE_SUCCESS,
@@ -280,15 +284,14 @@ export const updateUser = (user) => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.put(`${baseURL}/users/${user._id}`, user, config);
+    await axios.patch(`${baseURL}/users/${user.id}`, user, config);
 
     dispatch({ type: USER_UPDATE_SUCCESS });
-    dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (e) {
     console.log(e.response.data.message);
     dispatch({
