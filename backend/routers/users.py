@@ -28,7 +28,7 @@ def register_user(
     access_token = oauth2.create_access_token(data={'sub': user.email})
 
     return {
-        '_id': new_user.id,
+        'id': new_user.id,
         'name': new_user.name,
         'email': new_user.email,
         'isAdmin': new_user.isAdmin,
@@ -46,7 +46,7 @@ def get_user(
     if db_user is None:
         raise HTTPException(status_code=404, detail="User is not found")
     return {
-        '_id': db_user.id,
+        'id': db_user.id,
         'name': db_user.name,
         'email': db_user.email,
         'isAdmin': db_user.isAdmin,
@@ -60,7 +60,7 @@ async def update_user(user: schemas.ProfileUpdate,
                       token: str = Depends(oauth2_schema)):
     updated_user = crud.update_user(db, current_user.id, user)
     return {
-        '_id': updated_user.id,
+        'id': updated_user.id,
         'name': updated_user.name,
         'email': updated_user.email,
         'isAdmin': updated_user.isAdmin,
