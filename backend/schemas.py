@@ -78,6 +78,16 @@ class UserDetails(BaseModel):
         orm_mode = True
 
 
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    isAdmin: Optional[bool] = None
+
+    class Config:
+        orm_mode = True
+
+
 class UserRegister(BaseModel):
     name: str
     email: str
