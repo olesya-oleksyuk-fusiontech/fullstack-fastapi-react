@@ -22,6 +22,7 @@ import {
   PRODUCT_UPDATE_REQUEST,
   PRODUCT_UPDATE_SUCCESS,
 } from '../constants/productConstants';
+import { baseURL } from './constants';
 
 const getProductListParams = ({ keyword, pageNumber }) => {
   const requestParams = new URLSearchParams();
@@ -36,7 +37,7 @@ export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) 
     dispatch({ type: PRODUCT_LIST_REQUEST });
 
     const requestParams = getProductListParams({ keyword, pageNumber });
-    const { data } = await axios.get(`http://localhost:8000/products?${requestParams}`);
+    const { data } = await axios.get(`${baseURL}/products?${requestParams}`);
 
     dispatch({
       type: PRODUCT_LIST_SUCCESS,
@@ -62,7 +63,7 @@ export const listProductDetails = (id) => async (dispatch, getState) => {
       userLogin: { userInfo },
     } = getState();
 
-    const { data } = await axios.get(`http://localhost:8000/products/${id}`, {
+    const { data } = await axios.get(`${baseURL}/products/${id}`, {
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${userInfo?.access_token || null}`,
@@ -105,7 +106,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
       },
     };
 
-    await axios.delete(`/api/products/${id}`, config);
+    await axios.delete(`${baseURL}/products/${id}`, config);
 
     dispatch({
       type: PRODUCT_DELETE_SUCCESS,
@@ -138,7 +139,7 @@ export const createProduct = () => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.post('/api/products', {}, config);
+    const { data } = await axios.post(`${baseURL}/products`, {}, config);
 
     dispatch({
       type: PRODUCT_CREATE_SUCCESS,
@@ -174,7 +175,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     };
 
     const { data } = await axios.put(
-      `/api/products/${product._id}`,
+      `${baseURL}/products/${product._id}`,
       product,
       config,
     );
@@ -210,7 +211,7 @@ export const uploadProductPicture = (pic) => async (dispatch) => {
       },
     };
 
-    const { data } = await axios.post('/api/upload', formData, config);
+    const { data } = await axios.post(`${baseURL}/upload`, formData, config);
 
     dispatch({
       type: PIC_UPLOAD_SUCCESS,
@@ -245,7 +246,7 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
       },
     };
 
-    await axios.post(`/api/products/${productId}/reviews`, review, config);
+    await axios.post(`${baseURL}/products/${productId}/reviews`, review, config);
 
     dispatch({
       type: PRODUCT_CREATE_REVIEW_SUCCESS,
