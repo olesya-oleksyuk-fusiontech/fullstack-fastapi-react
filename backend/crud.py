@@ -21,10 +21,8 @@ def pagination(query: Query, skip: int = 0, limit: int = 100):
 def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''):
     products_filtered = filtration(db.query(models.Product), keyword=keyword)
     products_count = products_filtered.count()
-    print('products_count', products_count)
     products_paginated = pagination(products_filtered, skip, limit)
     pages = 1 if (products_count <= limit) else math.ceil(products_count / limit)
-    print('pages', pages)
     return dict(products=products_paginated.all(), pages=pages)
 
 
