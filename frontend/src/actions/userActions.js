@@ -162,15 +162,18 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
 
     console.log('user', user);
 
+    const body = {
+      ...(user.name && { name: user.name }),
+      ...(user.email && { email: user.email }),
+      ...(user.password && { password: user.password }),
+    };
 
-    const { data } = await axios.patch('http://localhost:8000/users/profile', user, {
+    const { data } = await axios.patch('http://localhost:8000/users/profile', body, {
       headers: {
         accept: 'application/json',
         Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     });
-
-    // const { data } = await axios.put('/api/users/profile', user, config);
 
     dispatch({
       type: USER_UPDATE_PROFILE_SUCCESS,
