@@ -1,4 +1,5 @@
 import math
+from typing import List, Type
 
 from fastapi import Query, HTTPException, status
 from sqlalchemy import inspect
@@ -24,16 +25,29 @@ def pagination(query: Query, skip: int = 0, limit: int = 100):
     return query.offset(skip).limit(limit)
 
 
+def add_count_reviews(products: List[models.Product] | Type[models.Product] | None):
+    if isinstance(products, list):
+        for item in products:
+            item.numReviews = len(item.reviews)
+    elif products is None:
+        products.numReviews = 0
+    else:
+        products.numReviews = len(products.reviews)
+
+
 def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''):
     products_filtered = filtration(db.query(models.Product), keyword=keyword)
     products_count = products_filtered.count()
-    products_paginated = pagination(products_filtered, skip, limit)
+    products_paginated = pagination(products_filtered, skip, limit).all()
     pages = 1 if (products_count <= limit) else math.ceil(products_count / limit)
-    return dict(products=products_paginated.all(), pages=pages)
+    add_count_reviews(products=products_paginated)
+    return dict(products=products_paginated, pages=pages)
 
 
 def get_product(db: Session, product_id: int):
-    return db.query(models.Product).filter(models.Product.id == product_id).first()
+    product = db.query(models.Product).filter(models.Product.id == product_id).first()
+    add_count_reviews(products=product)
+    return product
 
 
 def create_product(db: Session, item: schemas.Product):
@@ -88,4 +102,3 @@ def update_user(db: Session, user_id: int, new_user: schemas.ProfileUpdate | sch
     db.query(models.User).filter(models.User.id == user_id).update(update_data)
     db.commit()
     return get_user(db, user_id)
-

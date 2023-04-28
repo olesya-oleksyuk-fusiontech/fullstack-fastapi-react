@@ -73,7 +73,7 @@ class Creator(BaseModel):
         orm_mode = True
 
 
-class Product(BaseModel):
+class ProductOnAdminList(BaseModel):
     id: int
     name: str
     image: str
@@ -83,10 +83,23 @@ class Product(BaseModel):
     rating: int
     price: float
     countInStock: int
+    numReviews: int
+
+    class Config:
+        orm_mode = True
+
+
+class Product(ProductOnAdminList):
     created_on: datetime
     reviews: Optional[List[ReviewReadWithProduct]] = []
     # admin who add the product
     creator: Creator = None
+
+
+class ProductsDisplay(BaseModel):
+    products: List[ProductOnAdminList]
+    page: int
+    pages: int
 
     class Config:
         orm_mode = True
@@ -142,11 +155,3 @@ class UserRegister(BaseModel):
     class Config:
         orm_mode = True
 
-
-class ProductDisplay(BaseModel):
-    products: List[Product]
-    page: int
-    pages: int
-
-    class Config:
-        orm_mode = True

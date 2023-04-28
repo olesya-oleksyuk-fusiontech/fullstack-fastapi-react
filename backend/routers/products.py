@@ -45,7 +45,7 @@ def create_product(
     return crud.create_product(db=db, item=item)
 
 
-@router.get('', response_model=schemas.ProductDisplay, tags=['products'])
+@router.get('', response_model=schemas.ProductsDisplay, tags=['products'])
 def read_products(page: int = 1, keyword: Optional[str] = None, db: Session = Depends(get_db)):
     page_size = 2
     response = crud.get_products(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword)
