@@ -16,7 +16,10 @@ class Review(Base):
     created_on = Column(DateTime(), default=datetime.utcnow)
 
     product_id = Column(Integer, ForeignKey("product.id"))
-    user_id = Column(Integer, ForeignKey("user.id"))
+    creator_id = Column(Integer, ForeignKey("user.id"))
+    product = relationship("Product", back_populates="reviews")
+    owner = relationship("User", back_populates="reviews")
+
 
 
 class Product(Base):
@@ -32,7 +35,10 @@ class Product(Base):
     price = Column(Numeric, nullable=False)
     countInStock = Column(Integer, nullable=False)
     created_on = Column(TIMESTAMP, default=datetime.utcnow)
-    reviews = relationship('Review', backref='product')
+
+    reviews = relationship("Review", back_populates="product")
+    creator_id = Column(Integer, ForeignKey("user.id"))
+    creator = relationship("User", back_populates="products")
 
 
 class User(Base):
@@ -45,5 +51,7 @@ class User(Base):
     isActive = Column(Boolean, default=True)
     createdAt = Column(TIMESTAMP, default=datetime.utcnow)
     updatedAt = Column(TIMESTAMP, default=datetime.utcnow)
+
     reviews = relationship('Review', backref='user')
+    products = relationship("Product", back_populates="creator")
 

@@ -48,7 +48,7 @@ const ProductList = () => {
   useEffect(() => {
     if (loggedInUser && loggedInUser.isAdmin) {
       if (successCreate) {
-        history.push(`/admin/product/${createdProduct._id}/edit`);
+        history.push(`/admin/product/${createdProduct.id}/edit`);
       } else {
         dispatch(listProducts('', pageNumber));
       }
@@ -110,13 +110,13 @@ const ProductList = () => {
                 </thead>
                 <tbody>
                   {products.map((product) => (
-                    <tr key={product._id}>
+                    <tr key={product.id}>
                       <td
-                        className={adaptiveCell(product._id)}
-                        onClick={() => onClickCellHandler(product._id)}
-                        onKeyPress={() => onClickCellHandler(product._id)}
+                        className={adaptiveCell(product.id)}
+                        onClick={() => onClickCellHandler(product.id)}
+                        onKeyPress={() => onClickCellHandler(product.id)}
                       >
-                        {product._id}
+                        {product.id}
                       </td>
                       <td>
                         {product.name}
@@ -125,12 +125,12 @@ const ProductList = () => {
                       <td>{product.category}</td>
                       <td>{product.brand}</td>
                       <td className="td-control">
-                        <LinkContainer to={`/admin/product/${product._id}/edit`}>
+                        <LinkContainer to={`/admin/product/${product.id}/edit`}>
                           <Button variant="link" size="sm" className="btn-table">
                             <EditIcon />
                           </Button>
                         </LinkContainer>
-                        <Button variant="warning" size="sm" className="btn-table ms-sm-2" onClick={() => deleteHandler(product._id)}>
+                        <Button variant="warning" size="sm" className="btn-table ms-sm-2" onClick={() => deleteHandler(product.id)}>
                           <TrashIcon />
                         </Button>
                       </td>

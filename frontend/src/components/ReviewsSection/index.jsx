@@ -51,10 +51,10 @@ const ReviewsSection = ({
     const defaultComment = (ratingValue) => `${ratingMarks[ratingValue - 1]}`;
 
     return (
-      <ListGroupItem key={rew._id}>
-        <strong>{rew.name}</strong>
+      <ListGroupItem key={rew.id}>
+        <strong>{rew.owner.name}</strong>
         <Rating ratingValue={rew.rating} noReviewsNumber />
-        <p>{toDateTime(rew.createdAt, DATE_TIME_FORMAT.SHORT)}</p>
+        <p>{toDateTime(rew.created_on, DATE_TIME_FORMAT.SHORT)}</p>
         <p>{rew.comment || defaultComment(rew.rating)}</p>
       </ListGroupItem>
     );

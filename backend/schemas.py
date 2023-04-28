@@ -4,38 +4,45 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class ReviewOwner(BaseModel):
+    name: str
+
+    class Config:
+        orm_mode = True
+
+
 class Review(BaseModel):
     id: int
     rating: int
     comment: str
     created_on: datetime
     product_id: int
+    creator_id: int
+    creator: ReviewOwner
+
+    # user: ReviewOwner = Relationship(back_populates="user")
+    # user: ReviewOwner = Relationship(back_populates="user")
 
     class Config:
         orm_mode = True
 
 
-class Product(BaseModel):
-    id: int
-    name: str
-    image: str
-    brand: str
-    category: str
-    description: str
+class ReviewReadWithProduct(BaseModel):
     rating: int
-    price: float
-    countInStock: int
+    comment: str
     created_on: datetime
-    reviews: Optional[List[Review]] = []
+    creator_id: int
+    owner: ReviewOwner
+
+    # user: ReviewOwner = Relationship(back_populates="user")
 
     class Config:
         orm_mode = True
 
 
-class ProductDisplay(BaseModel):
-    products: List[Product]
-    page: int
-    pages: int
+class ReviewCreate(BaseModel):
+    rating: int
+    comment: str
 
     class Config:
         orm_mode = True
@@ -50,6 +57,49 @@ class User(BaseModel):
     createdAt: datetime
     updatedAt: datetime
     reviews: Optional[List[Review]] = []
+
+    class Config:
+        orm_mode = True
+
+
+class Creator(BaseModel):
+    id: int
+    name: str
+    email: str
+    createdAt: datetime
+    updatedAt: datetime
+
+    class Config:
+        orm_mode = True
+
+
+class ProductOnAdminList(BaseModel):
+    id: int
+    name: str
+    image: str
+    brand: str
+    category: str
+    description: str
+    rating: int
+    price: float
+    countInStock: int
+    numReviews: int
+
+    class Config:
+        orm_mode = True
+
+
+class Product(ProductOnAdminList):
+    created_on: datetime
+    reviews: Optional[List[ReviewReadWithProduct]] = []
+    # admin who add the product
+    creator: Creator = None
+
+
+class ProductsDisplay(BaseModel):
+    products: List[ProductOnAdminList]
+    page: int
+    pages: int
 
     class Config:
         orm_mode = True
@@ -104,3 +154,4 @@ class UserRegister(BaseModel):
 
     class Config:
         orm_mode = True
+
