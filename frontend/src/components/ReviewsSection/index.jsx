@@ -52,7 +52,7 @@ const ReviewsSection = ({
 
     return (
       <ListGroupItem key={rew.id}>
-        <strong>{rew.user.name}</strong>
+        <strong>{rew.owner.name}</strong>
         <Rating ratingValue={rew.rating} noReviewsNumber />
         <p>{toDateTime(rew.created_on, DATE_TIME_FORMAT.SHORT)}</p>
         <p>{rew.comment || defaultComment(rew.rating)}</p>

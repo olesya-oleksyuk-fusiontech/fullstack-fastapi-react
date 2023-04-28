@@ -241,8 +241,8 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
