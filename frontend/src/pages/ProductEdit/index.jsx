@@ -67,7 +67,7 @@ const ProductEditScreen = () => {
         setCategory(createdProduct.category);
         setCountInStock(createdProduct.countInStock);
         setDescription(createdProduct.description);
-      } else if (!product?.name || product._id !== productId) {
+      } else if (!product?.name || product.id !== +productId) {
         dispatch(listProductDetails(productId));
       } else {
         setName(product.name);
