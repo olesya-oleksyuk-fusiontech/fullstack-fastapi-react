@@ -44,6 +44,14 @@ def create_product(db: Session, item: schemas.Product):
     return db_product
 
 
+def create_review(db: Session, review: schemas.ReviewCreate, product_id: int, creator_id: id):
+    new_review = {**review.dict(), 'product_id': product_id, 'creator_id': creator_id}
+    db_review = models.Review(**new_review)
+    db.add(db_review)
+    db.commit()
+    db.refresh(db_review)
+
+
 def create_user(db: Session, user: schemas.UserRegister):
     new_user = models.User(
         name=user.name,

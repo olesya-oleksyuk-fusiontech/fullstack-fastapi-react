@@ -27,6 +27,17 @@ def read_product(
     return db_product
 
 
+@router.post('/{product_id}/reviews')
+def create_review(
+        product_id: int,
+        review: schemas.ReviewCreate,
+        db: Session = Depends(get_db),
+        current_user: schemas.User = Depends(oauth2.get_current_user)
+):
+    crud.create_review(db, review, product_id, creator_id=current_user.id)
+    return 'test'
+
+
 @router.post('', response_model=schemas.Product, tags=['products'])
 def create_product(
         item: schemas.Product, db: Session = Depends(get_db)
@@ -40,4 +51,3 @@ def read_products(page: int = 1, keyword: Optional[str] = None, db: Session = De
     response = crud.get_products(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword)
     response.update({"page": page})
     return response
-

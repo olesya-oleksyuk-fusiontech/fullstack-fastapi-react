@@ -3,6 +3,7 @@ from datetime import datetime
 
 from pydantic import BaseModel
 
+
 class ReviewOwner(BaseModel):
     name: str
 
@@ -18,6 +19,7 @@ class Review(BaseModel):
     product_id: int
     creator_id: int
     creator: ReviewOwner
+
     # user: ReviewOwner = Relationship(back_populates="user")
     # user: ReviewOwner = Relationship(back_populates="user")
 
@@ -31,10 +33,20 @@ class ReviewReadWithProduct(BaseModel):
     created_on: datetime
     creator_id: int
     owner: ReviewOwner
+
     # user: ReviewOwner = Relationship(back_populates="user")
 
     class Config:
         orm_mode = True
+
+
+class ReviewCreate(BaseModel):
+    rating: int
+    comment: str
+
+    class Config:
+        orm_mode = True
+
 
 class User(BaseModel):
     id: int
