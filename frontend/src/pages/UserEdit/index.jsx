@@ -12,7 +12,7 @@ import UserFormContainer from '../../components/FormContainer';
 import ButtonReturn from '../../components/buttons/ButtonReturn';
 
 import { getUserDetails, updateUser } from '../../actions/userActions';
-import { USER_UPDATE_RESET } from '../../constants/userConstants';
+import { USER_DETAILS_RESET, USER_UPDATE_RESET } from '../../constants/userConstants';
 
 const UserEditScreen = () => {
   const { id: userId } = useParams();
@@ -37,8 +37,9 @@ const UserEditScreen = () => {
     if (loggedInUser && loggedInUser.isAdmin) {
       if (successUpdate) {
         dispatch({ type: USER_UPDATE_RESET });
+        dispatch({ type: USER_DETAILS_RESET });
         history.push('/admin/userlist');
-      } else if (!user.name || user._id !== userId) {
+      } else if (!user.name || user.id !== +userId) {
         dispatch(getUserDetails(userId));
       } else {
         setName(user.name);
@@ -53,7 +54,7 @@ const UserEditScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(updateUser({
-      _id: userId, name, email, isAdmin,
+      id: userId, name, email, isAdmin,
     }));
   };
 

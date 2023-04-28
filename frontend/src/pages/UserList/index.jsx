@@ -62,13 +62,13 @@ const UserListScreen = () => {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user._id}>
+              <tr key={user.id}>
                 <td
-                  className={adaptiveCell(user._id)}
-                  onClick={() => onClickCellHandler(user._id)}
-                  onKeyPress={() => onClickCellHandler(user._id)}
+                  className={adaptiveCell(user.id)}
+                  onClick={() => onClickCellHandler(user.id)}
+                  onKeyPress={() => onClickCellHandler(user.id)}
                 >
-                  {user._id}
+                  {user.id}
                 </td>
                 <td>{user.name}</td>
                 <td><a href={`mailto:${user.email}`}>{user.email}</a></td>
@@ -78,12 +78,12 @@ const UserListScreen = () => {
                     : <CrossIcon />}
                 </td>
                 <td className="td-control">
-                  <LinkContainer to={`/admin/user/${user._id}/edit`}>
+                  <LinkContainer to={`/admin/user/${user.id}/edit`}>
                     <Button variant="link" size="sm" className="btn-table">
                       <EditIcon />
                     </Button>
                   </LinkContainer>
-                  <Button variant="warning" size="sm" className="btn-table ms-md-2" onClick={() => deleteHandler(user._id)}>
+                  <Button variant="warning" size="sm" className="btn-table ms-md-2" onClick={() => deleteHandler(user.id)}>
                     <TrashIcon />
                   </Button>
                 </td>
