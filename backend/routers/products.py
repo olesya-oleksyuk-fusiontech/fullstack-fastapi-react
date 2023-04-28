@@ -3,10 +3,12 @@ from typing import List, Optional
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
-import schemas
 import crud
 from auth import oauth2
 from database import get_db
+from schemas.product import Product, ProductsDisplay
+from schemas.review import ReviewCreate
+from schemas.user import User
 
 router = APIRouter(
     prefix='/products',
@@ -15,7 +17,7 @@ router = APIRouter(
 
 
 @router.get("/{product_id}",
-            response_model=schemas.Product,
+            response_model=Product,
             tags=['products'])
 def read_product(
         product_id: int,
@@ -30,22 +32,22 @@ def read_product(
 @router.post('/{product_id}/reviews')
 def create_review(
         product_id: int,
-        review: schemas.ReviewCreate,
+        review: ReviewCreate,
         db: Session = Depends(get_db),
-        current_user: schemas.User = Depends(oauth2.get_current_user)
+        current_user: User = Depends(oauth2.get_current_user)
 ):
     crud.create_review(db, review, product_id, creator_id=current_user.id)
     return 'test'
 
 
-@router.post('', response_model=schemas.Product, tags=['products'])
+@router.post('', response_model=Product, tags=['products'])
 def create_product(
-        item: schemas.Product, db: Session = Depends(get_db)
+        item: Product, db: Session = Depends(get_db)
 ):
     return crud.create_product(db=db, item=item)
 
 
-@router.get('', response_model=schemas.ProductsDisplay, tags=['products'])
+@router.get('', response_model=ProductsDisplay, tags=['products'])
 def read_products(page: int = 1, keyword: Optional[str] = None, db: Session = Depends(get_db)):
     page_size = 2
     response = crud.get_products(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword)

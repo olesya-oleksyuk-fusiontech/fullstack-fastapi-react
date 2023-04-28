@@ -6,8 +6,10 @@ from sqlalchemy import inspect
 from sqlalchemy.orm import Session
 
 import models
-import schemas
 from hash import Hash
+from schemas.product import Product
+from schemas.review import ReviewCreate
+from schemas.user import ProfileUpdate, UserUpdate, UserRegister
 
 
 def object_as_dict(obj):
@@ -50,7 +52,7 @@ def get_product(db: Session, product_id: int):
     return product
 
 
-def create_product(db: Session, item: schemas.Product):
+def create_product(db: Session, item: Product):
     db_product = models.Product(**item.dict())
     db.add(db_product)
     db.commit()
@@ -58,7 +60,7 @@ def create_product(db: Session, item: schemas.Product):
     return db_product
 
 
-def create_review(db: Session, review: schemas.ReviewCreate, product_id: int, creator_id: id):
+def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id):
     new_review = {**review.dict(), 'product_id': product_id, 'creator_id': creator_id}
     db_review = models.Review(**new_review)
     db.add(db_review)
@@ -66,7 +68,7 @@ def create_review(db: Session, review: schemas.ReviewCreate, product_id: int, cr
     db.refresh(db_review)
 
 
-def create_user(db: Session, user: schemas.UserRegister):
+def create_user(db: Session, user: UserRegister):
     new_user = models.User(
         name=user.name,
         email=user.email,
@@ -94,7 +96,7 @@ def get_user_by_email(db: Session, email: str):
     return user
 
 
-def update_user(db: Session, user_id: int, new_user: schemas.ProfileUpdate | schemas.UserUpdate):
+def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate):
     update_data = new_user.dict(exclude_unset=True)
     if 'password' in update_data:
         new_password = Hash.bcrypt(update_data['password'])
