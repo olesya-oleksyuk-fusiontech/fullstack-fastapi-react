@@ -40,3 +40,4 @@ def read_products(page: int = 1, keyword: Optional[str] = None, db: Session = De
     response = crud.get_products(db, skip=page_size * (page - 1), limit=page_size, keyword=keyword)
     response.update({"page": page})
     return response
+

@@ -1,8 +1,8 @@
-"""change products backref in User
+"""replace backref to back_populates
 
-Revision ID: 3a2c2e2bd737
-Revises: 0f66ab6b33a7
-Create Date: 2023-04-27 17:09:51.710187
+Revision ID: aee06e2aaf0d
+Revises: dbbb0d45a6ed
+Create Date: 2023-04-28 10:31:40.679688
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '3a2c2e2bd737'
-down_revision = '0f66ab6b33a7'
+revision = 'aee06e2aaf0d'
+down_revision = 'dbbb0d45a6ed'
 branch_labels = None
 depends_on = None
 
