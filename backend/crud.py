@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
-from schemas.product import Product
+from schemas.product import Product, ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
 
@@ -104,3 +104,10 @@ def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate)
     db.query(models.User).filter(models.User.id == user_id).update(update_data)
     db.commit()
     return get_user(db, user_id)
+
+
+def edit_product(db: Session, new_product: ProductEdit):
+    update_data = new_product.dict()
+    db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
+    db.commit()
+    return get_product(db, product_id=new_product.id)

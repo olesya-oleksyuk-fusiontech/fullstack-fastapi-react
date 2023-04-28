@@ -21,7 +21,6 @@ class Review(Base):
     owner = relationship("User", back_populates="reviews")
 
 
-
 class Product(Base):
     __tablename__ = "product"
     # __allow_unmapped__ = True
@@ -54,4 +53,3 @@ class User(Base):
 
     reviews = relationship('Review', backref='user')
     products = relationship("Product", back_populates="creator")
-
