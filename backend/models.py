@@ -25,7 +25,7 @@ class Product(Base):
     __tablename__ = "product"
     # __allow_unmapped__ = True
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    name = Column(String(50), unique=True, nullable=False)
+    name = Column(String(50), nullable=False)
     image = Column(String(100), nullable=False)
     brand = Column(String(20), nullable=False)
     category = Column(String(20), nullable=False)

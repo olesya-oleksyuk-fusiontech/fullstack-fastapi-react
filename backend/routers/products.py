@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
@@ -48,11 +48,12 @@ def create_review(
     return 'test'
 
 
-@router.post('', response_model=Product)
+@router.post('', response_model=ProductEdit)
 def create_product(
-        item: Product, db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        current_user: User = Depends(oauth2.get_current_user)
 ):
-    return crud.create_product(db=db, item=item)
+    return crud.create_product(db=db, creator_id=current_user.id)
 
 
 @router.get('', response_model=ProductsDisplay)
