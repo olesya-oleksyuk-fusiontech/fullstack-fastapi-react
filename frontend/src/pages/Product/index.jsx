@@ -58,7 +58,14 @@ const Product = () => {
         <>
           <Row>
             <Col md={6}>
-              <Image src={product.image} alt={product.name} fluid />
+              <Image
+                src={product.image}
+                onError={(e) => {
+                  e.target.setAttribute('src', '/images/sample.jpg');
+                }}
+                alt={product.name}
+                fluid
+              />
             </Col>
             <Col md={3}>
               <ListGroup variant="flush">
