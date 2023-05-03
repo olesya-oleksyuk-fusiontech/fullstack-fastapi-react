@@ -12,7 +12,7 @@ app.include_router(products.router)
 app.include_router(authentication.router)
 app.include_router(uploads.router)
 
-origins = ['http://localhost:3000', "localhost:3000", 'http://localhost:3001', 'localhost:3001']
+origins = ['http://0.0.0.0:3000', "0.0.0.0:3000"]
 
 app.add_middleware(
     CORSMiddleware,
