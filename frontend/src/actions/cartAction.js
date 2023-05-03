@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CART_ADD_ITEM, CART_CLEAR, CART_REMOVE_ITEM } from '../constants/cartConstants';
-import {baseURL} from './constants';
+import { baseURL } from './constants';
 
 export const addToCart = (id, quantity) => async (dispatch, getState) => {
   const { data } = await axios.get(`${baseURL}/products/${id}`);

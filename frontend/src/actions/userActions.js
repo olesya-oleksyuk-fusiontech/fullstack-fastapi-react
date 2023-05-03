@@ -55,7 +55,7 @@ export const login = (email, password) => async (dispatch) => {
     // сохраняем данные о текущем залогированном пользователе в local storage
     localStorage.setItem('userInfo', JSON.stringify(data));
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
@@ -107,7 +107,7 @@ export const register = (name, email, password) => async (dispatch) => {
     // сохраняем данные о текущем залогированном пользователе в local storage
     localStorage.setItem('userInfo', JSON.stringify(data));
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_REGISTER_FAIL,
       payload:
@@ -142,7 +142,7 @@ export const getUserDetails = (id) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_DETAILS_FAIL,
       payload:
@@ -196,7 +196,7 @@ export const updateUserProfile = (user) => async (dispatch, getState) => {
     // сохраняем данные о текущем залогированном пользователе в local storage
     localStorage.setItem('userInfo', JSON.stringify(data));
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_UPDATE_PROFILE_FAIL,
       payload:
@@ -230,7 +230,7 @@ export const listUsers = () => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_LIST_FAIL,
       payload:
@@ -261,7 +261,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 
     dispatch({ type: USER_DELETE_SUCCESS });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_DELETE_FAIL,
       payload:
@@ -293,7 +293,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
 
     dispatch({ type: USER_UPDATE_SUCCESS });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: USER_UPDATE_FAIL,
       payload:

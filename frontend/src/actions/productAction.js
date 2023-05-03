@@ -44,7 +44,7 @@ export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) 
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_LIST_FAIL,
       payload:
@@ -75,7 +75,7 @@ export const listProductDetails = (id) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
       payload: {
@@ -112,7 +112,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
       type: PRODUCT_DELETE_SUCCESS,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_DELETE_FAIL,
       payload:
@@ -140,7 +140,6 @@ export const createProduct = () => async (dispatch, getState) => {
       },
     };
 
-    console.log('тут')
     const { data } = await axios.post(`${baseURL}/products`, {}, config);
 
     dispatch({
@@ -148,7 +147,7 @@ export const createProduct = () => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_CREATE_FAIL,
       payload:
@@ -187,7 +186,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_UPDATE_FAIL,
       payload:
@@ -259,7 +258,7 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
       type: PRODUCT_CREATE_REVIEW_SUCCESS,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_CREATE_REVIEW_FAIL,
       payload:
