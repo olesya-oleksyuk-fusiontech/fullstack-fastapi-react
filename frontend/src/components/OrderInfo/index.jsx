@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 
 import Message from '../Message';
 
-import { paymentMethodName, toCurrency, toDateTime } from '../../helpers/data';
+import {
+  getPicUrl, paymentMethodName, toCurrency, toDateTime,
+} from '../../helpers/data';
 import { CURRENCY, DATE_TIME_FORMAT } from '../../helpers/constants';
 
 const OrderInfo = (
@@ -108,7 +110,7 @@ const OrderInfo = (
               <ListGroupItem key={index}>
                 <Row>
                   <Col md={1}>
-                    <Image src={item.image} alt={item.name} fluid rounded />
+                    <Image src={getPicUrl(item.image)} alt={item.name} fluid rounded />
                   </Col>
                   <Col>
                     <Link to={`/product/${item.product}?redirect=/orders/${orderId}`}>

@@ -14,7 +14,7 @@ import ButtonReturn from '../../components/buttons/ButtonReturn';
 import ReviewsSection from '../../components/ReviewsSection';
 import NoFoundProduct from '../../components/NoFound/Product';
 
-import { toCurrency } from '../../helpers/data';
+import { getPicUrl, toCurrency } from '../../helpers/data';
 import { CURRENCY } from '../../helpers/constants';
 
 import { listProductDetails } from '../../actions/productAction';
@@ -59,9 +59,9 @@ const Product = () => {
           <Row>
             <Col md={6}>
               <Image
-                src={product.image}
+                src={getPicUrl(product.image)}
                 onError={(e) => {
-                  e.target.setAttribute('src', '/images/sample.jpg');
+                  e.target.setAttribute('src', getPicUrl('images/sample.jpg'));
                 }}
                 alt={product.name}
                 fluid

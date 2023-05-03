@@ -11,7 +11,7 @@ import DefaultLayout from '../../layout/Default';
 import Message from '../../components/Message';
 import ButtonCandyPrimary from '../../components/buttons/ButtonCandyPrimary';
 
-import { toCurrency } from '../../helpers/data';
+import { getPicUrl, toCurrency } from '../../helpers/data';
 import { CURRENCY } from '../../helpers/constants';
 
 import { addToCart, removeFromCart } from '../../actions/cartAction';
@@ -72,7 +72,7 @@ const Cart = () => {
                 >
                   <Row>
                     <Col md={2} className="cart-img p-0 py-sm-4 px-sm-7 p-md-0 px-lg-4">
-                      <Image src={item.image} alt={item.name} fluid rounded />
+                      <Image src={getPicUrl(item.image)} alt={item.name} fluid rounded />
                     </Col>
                     <Col md={4} className="mt-4 mt-md-2">
                       <Link
