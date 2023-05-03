@@ -1,12 +1,12 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from auth import authentication
 from routers import users, products, uploads
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(authentication.router)
@@ -24,8 +24,8 @@ app.add_middleware(
 
 
 @app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+async def read_root(request: Request):
+    return {"message": "Hello World", "root_path": request.scope.get("root_path")}
 
 
 app.mount('/images', StaticFiles(directory='images'), name='images')
