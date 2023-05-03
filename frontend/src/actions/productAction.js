@@ -44,7 +44,7 @@ export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) 
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_LIST_FAIL,
       payload:
@@ -75,7 +75,7 @@ export const listProductDetails = (id) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_DETAILS_FAIL,
       payload: {
@@ -112,7 +112,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
       type: PRODUCT_DELETE_SUCCESS,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_DELETE_FAIL,
       payload:
@@ -135,7 +135,8 @@ export const createProduct = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
@@ -146,7 +147,7 @@ export const createProduct = () => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_CREATE_FAIL,
       payload:
@@ -185,7 +186,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_UPDATE_FAIL,
       payload:
@@ -196,7 +197,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
   }
 };
 
-export const uploadProductPicture = (pic) => async (dispatch) => {
+export const uploadProductPicture = (pic) => async (dispatch, getState) => {
   const formData = new FormData();
   // добавляем к объекту поле с именем image и значением загруженного изображения
   formData.append('image', pic);
@@ -205,20 +206,25 @@ export const uploadProductPicture = (pic) => async (dispatch) => {
       type: PIC_UPLOAD_REQUEST,
     });
 
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
     const config = {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.post(`${baseURL}/upload`, formData, config);
+    const { data } = await axios.post(`${baseURL}/upload/img`, formData, config);
 
     dispatch({
       type: PIC_UPLOAD_SUCCESS,
-      payload: data,
+      payload: data.filename,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PIC_UPLOAD_FAIL,
       payload:
@@ -252,7 +258,7 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
       type: PRODUCT_CREATE_REVIEW_SUCCESS,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: PRODUCT_CREATE_REVIEW_FAIL,
       payload:

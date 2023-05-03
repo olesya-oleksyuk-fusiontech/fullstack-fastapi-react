@@ -1,14 +1,16 @@
 import uvicorn
 from fastapi import FastAPI
-
 from fastapi.middleware.cors import CORSMiddleware
-from routers import users, products
+from fastapi.staticfiles import StaticFiles
+
 from auth import authentication
+from routers import users, products, uploads
 
 app = FastAPI()
 app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(authentication.router)
+app.include_router(uploads.router)
 
 origins = ['http://localhost:3000', "localhost:3000", 'http://localhost:3001', 'localhost:3001']
 
@@ -24,6 +26,9 @@ app.add_middleware(
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
+
+
+app.mount('/images', StaticFiles(directory='images'), name='images')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

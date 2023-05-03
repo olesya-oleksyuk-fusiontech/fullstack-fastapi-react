@@ -4,7 +4,7 @@ import { Card } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
 import Rating from '../Rating';
-import { toCurrency } from '../../helpers/data';
+import { getPicUrl, toCurrency } from '../../helpers/data';
 import { CURRENCY } from '../../helpers/constants';
 import './style.scss';
 
@@ -16,9 +16,9 @@ const ProductCard = ({ product }) => {
       <Card className="my-3 pb-0 p-sm-3 pb-md-0 h-90 rounded" bsPrefix="card-product">
         <Link to={`/product/${product.id}`}>
           <Card.Img
-            src={product.image}
+            src={getPicUrl(product.image)}
             onError={(e) => {
-              e.target.setAttribute('src', '/images/sample.jpg');
+              e.target.setAttribute('src', getPicUrl('images/sample.jpg'));
             }}
           />
         </Link>

@@ -98,7 +98,7 @@ const ProductEditScreen = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(updateProduct({
-      _id: productId,
+      id: productId,
       name,
       price,
       image,

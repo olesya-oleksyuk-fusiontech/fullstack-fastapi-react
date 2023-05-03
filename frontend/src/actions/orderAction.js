@@ -43,7 +43,7 @@ export const createOrder = (order) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_CREATE_FAIL,
       payload:
@@ -76,7 +76,7 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_DETAILS_FAIL,
       payload:
@@ -110,7 +110,7 @@ export const payOrder = (orderId, paymentResult) => async (dispatch, getState) =
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_PAY_PROCESS_FAIL,
       payload:
@@ -143,7 +143,7 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_DELIVERY_PROCESS_FAIL,
       payload:
@@ -177,7 +177,7 @@ export const listCustomerOrder = () => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_LIST_CUSTOMER_FAIL,
       payload:
@@ -211,7 +211,7 @@ export const listOrders = () => async (dispatch, getState) => {
       payload: data,
     });
   } catch (e) {
-    console.log(e.response.data.message);
+    console.log(e.response?.data?.message);
     dispatch({
       type: ORDER_LIST_FAIL,
       payload:

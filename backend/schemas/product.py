@@ -8,16 +8,22 @@ from .review import ReviewReadWithProduct
 from .user import ReviewCreator
 
 
-class ProductOnAdminList(BaseModel):
+class ProductEdit(BaseModel):
     id: int
     name: str
     image: str
     brand: str
     category: str
     description: str
-    rating: int
     price: float
     countInStock: int
+
+    class Config:
+        orm_mode = True
+
+
+class ProductOnAdminList(ProductEdit):
+    rating: int
     numReviews: int
 
     class Config:

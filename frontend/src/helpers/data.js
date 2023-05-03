@@ -1,6 +1,7 @@
 import {
   CURRENCY, DATE_TIME_FORMAT, LOCALES, PAYMENT_METHOD,
 } from './constants';
+import { baseURL } from '../actions/constants';
 
 export const toCurrency = (number, format = CURRENCY.DEFAULT) => {
   const { curr, langFormat } = format;
@@ -43,3 +44,5 @@ export const paymentMethodName = (paymentMethod) => {
   }
   return 'не выбран';
 };
+
+export const getPicUrl = (imgPath) => `${baseURL}/${imgPath}`;
