@@ -55,7 +55,7 @@ def get_product(db: Session, product_id: int):
 def create_product(db: Session, creator_id: int):
     new_product = models.Product(
         name='Наименование',
-        image='/images/sample.jpg',
+        image='images/sample.jpg',
         brand='Бренд',
         category='Категория',
         description='Описание',
