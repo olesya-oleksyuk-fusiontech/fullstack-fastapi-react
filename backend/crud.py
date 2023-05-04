@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
+from schemas.orders import OrderCreateDetails
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -70,6 +71,13 @@ def create_product(db: Session, creator_id: int):
     return new_product
 
 
+def edit_product(db: Session, new_product: ProductEdit):
+    update_data = new_product.dict()
+    db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
+    db.commit()
+    return get_product(db, product_id=new_product.id)
+
+
 def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id):
     new_review = {**review.dict(), 'product_id': product_id, 'creator_id': creator_id}
     db_review = models.Review(**new_review)
@@ -121,8 +129,62 @@ def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate)
     return get_user(db, user_id)
 
 
-def edit_product(db: Session, new_product: ProductEdit):
-    update_data = new_product.dict()
-    db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
+def create_shipping_address(db: Session, address: str, city: str, country: str, postal_code: int):
+    new_shipping_address = models.Shipping_Address(
+        address=address,
+        city=city,
+        postal_code=postal_code,
+        country=country,
+    )
+
+    db.add(new_shipping_address)
     db.commit()
-    return get_product(db, product_id=new_product.id)
+    db.refresh(new_shipping_address)
+    return new_shipping_address
+
+
+def create_order(
+        db: Session, items_price: float, shipping_price: float, total_price: float, user_id: int,
+        shipping_address_id: id):
+    new_order = models.Order(
+        items_price=items_price,
+        shipping_price=shipping_price,
+        total_price=total_price,
+        user_id=user_id,
+        shipping_address_id=shipping_address_id
+    )
+
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return new_order
+
+
+def add_order(db: Session, order_details: OrderCreateDetails, user_id):
+    new_shipping_address = create_shipping_address(
+        db,
+        address=order_details.shippingAddress.address,
+        city=order_details.shippingAddress.city,
+        postal_code=order_details.shippingAddress.postalCode,
+        country=order_details.shippingAddress.country
+    )
+
+    new_order = create_order(
+        db,
+        items_price=order_details.itemsPrice,
+        shipping_price=order_details.shippingPrice,
+        total_price=order_details.totalPrice,
+        user_id=user_id,
+        shipping_address_id=new_shipping_address.id
+    )
+
+    for item in order_details.orderItems:
+        new_order_item = models.Order_Item(
+            quantity=item.quantity,
+            product_id=item.productId,
+            order_id=new_order.id
+        )
+        db.add(new_order_item)
+
+    db.commit()
+    return new_order
