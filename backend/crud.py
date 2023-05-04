@@ -106,6 +106,11 @@ def get_user_by_email(db: Session, email: str):
     return user
 
 
+def get_order(db: Session, order_id: int):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    return order
+
+
 def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate):
     update_data = new_user.dict(exclude_unset=True)
     if 'password' in update_data:
