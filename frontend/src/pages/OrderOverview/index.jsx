@@ -33,7 +33,7 @@ const OrderOverviewPage = () => {
   useEffect(() => {
     if (!loggedInUser) {
       history.push(`/login?redirect=orders/${orderId}`);
-    } else if (!order || successDelivery || order._id !== orderId) {
+    } else if (!order || successDelivery || order.id !== +orderId) {
       dispatch(getOrderDetails(orderId));
       dispatch({ type: ORDER_DELIVERY_PROCESS_RESET });
     }

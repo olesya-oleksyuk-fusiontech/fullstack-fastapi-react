@@ -43,7 +43,7 @@ const OrderInCheckoutScreen = () => {
   // Расчёт цен
   cart.itemsPrice = addDecimals(cart.cartItems
     .reduce((acc, item) => acc + item.price * item.quantity, 0));
-  shipping.shippingPrice = addDecimals(cart.itemsPrice > 50 ? 0 : 4.8);
+  shipping.shippingPrice = addDecimals(+cart.itemsPrice > 50 ? 0 : 4.8);
   cart.totalPrice = addDecimals((Number(cart.itemsPrice) + Number(shipping.shippingPrice))
     .toFixed(2));
 
@@ -54,13 +54,15 @@ const OrderInCheckoutScreen = () => {
     if (success) {
       dispatch(clearCart());
       dispatch({ type: ORDER_CREATE_FINISH });
-      history.push(`/orders/${order._id}`);
+      history.push(`/orders/${order.id}`);
     }
   }, [history, success]);
 
   const placeOrderHandler = () => {
+    const orderItems = cart.cartItems.map((i) => ({ productId: i.product, quantity: +i.quantity }));
+
     dispatch(createOrder({
-      orderItems: cart.cartItems,
+      orderItems,
       shippingAddress: shipping.shippingAddress,
       paymentMethod: payment.paymentMethod,
       itemsPrice: cart.itemsPrice,
@@ -93,7 +95,12 @@ const OrderInCheckoutScreen = () => {
             paymentMethod={payment.paymentMethod}
           >
             {error ? <Message variant="danger">{error}</Message> : (
-              <ButtonCandyPrimary type="button" onClick={placeOrderHandler} disabled={cart.cartItems === 0} fullWidth>
+              <ButtonCandyPrimary
+                type="button"
+                onClick={placeOrderHandler}
+                disabled={cart.cartItems === 0}
+                fullWidth
+              >
                 Завершить заказ
               </ButtonCandyPrimary>
             )}

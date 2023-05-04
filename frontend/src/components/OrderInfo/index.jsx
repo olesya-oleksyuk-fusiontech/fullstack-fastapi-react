@@ -110,15 +110,20 @@ const OrderInfo = (
               <ListGroupItem key={index}>
                 <Row>
                   <Col md={1}>
-                    <Image src={getPicUrl(item.image)} alt={item.name} fluid rounded />
+                    <Image
+                      src={getPicUrl(item.product.image || item.image)}
+                      alt={item.name}
+                      fluid
+                      rounded
+                    />
                   </Col>
                   <Col>
-                    <Link to={`/product/${item.product}?redirect=/orders/${orderId}`}>
-                      {item.name}
+                    <Link to={`/product/${item.product.id}?redirect=/orders/${orderId}`}>
+                      {item.product.name || item.name}
                     </Link>
                   </Col>
                   <Col md={4}>
-                    {overallProductCost(item.price, item.quantity)}
+                    {overallProductCost(item.product.price || item.price, item.quantity)}
                   </Col>
                 </Row>
               </ListGroupItem>

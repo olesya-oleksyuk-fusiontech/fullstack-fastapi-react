@@ -19,6 +19,7 @@ import {
   ORDER_PAY_PROCESS_REQUEST,
   ORDER_PAY_PROCESS_SUCCESS,
 } from '../constants/orderConstants';
+import { baseURL } from './constants';
 
 export const createOrder = (order) => async (dispatch, getState) => {
   try {
@@ -26,16 +27,18 @@ export const createOrder = (order) => async (dispatch, getState) => {
       type: ORDER_CREATE_REQUEST,
     });
 
-    const { userLogin: { userInfo } } = getState();
+    const {
+      userLogin: { userInfo },
+    } = getState();
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.post('/api/orders', order, config);
+    const { data } = await axios.post(`${baseURL}/orders`, order, config);
 
     // data = the new (added to DB) order
     dispatch({
@@ -64,11 +67,12 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.get(`/api/orders/${id}`, config);
+    const { data } = await axios.get(`${baseURL}/orders/${id}`, config);
 
     // data = the fetched order
     dispatch({
