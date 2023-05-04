@@ -1,9 +1,11 @@
+from datetime import datetime
+
 from sqlalchemy import ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship
 from sqlalchemy.schema import Column
 from sqlalchemy.types import String, Integer, Text, Numeric, DateTime, Boolean
+
 from database import Base
-from datetime import datetime
 
 metadata = Base.metadata
 
@@ -38,6 +40,7 @@ class Product(Base):
     reviews = relationship("Review", back_populates="product")
     creator_id = Column(Integer, ForeignKey("user.id"))
     creator = relationship("User", back_populates="products")
+    orders = relationship("Order_Item", back_populates="product")
 
 
 class User(Base):
@@ -53,3 +56,45 @@ class User(Base):
 
     reviews = relationship('Review', backref='user')
     products = relationship("Product", back_populates="creator")
+    orders = relationship("Order", back_populates="user")
+
+
+class Order(Base):
+    __tablename__ = "order"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    items_price = Column(Numeric, nullable=False)
+    total_price = Column(Numeric, nullable=False)
+    shipping_price = Column(Numeric, default=0)
+    is_paid = Column(Boolean, default=False)
+    is_delivered = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    delivered_at = Column(TIMESTAMP, nullable=True)
+
+    user_id = Column(Integer, ForeignKey("user.id"))
+    shipping_address_id = Column(Integer, ForeignKey("shipping_address.id"))
+
+    user = relationship("User", back_populates="orders")
+    shipping_address = relationship("Shipping_Address", back_populates="orders")
+    order_items = relationship("Order_Item", back_populates="order")
+
+
+class Order_Item(Base):
+    __tablename__ = "order_item"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    quantity = Column(Integer, nullable=False)
+
+    order_id = Column(Integer, ForeignKey("order.id"))
+    product_id = Column(Integer, ForeignKey("product.id"))
+    order = relationship("Order", back_populates='order_items')
+    product = relationship("Product", back_populates="orders")
+
+
+class Shipping_Address(Base):
+    __tablename__ = "shipping_address"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    address = Column(String(50), nullable=False)
+    city = Column(String(30), nullable=False)
+    postal_code = Column(Integer, nullable=False)
+    country = Column(String(30), nullable=False)
+
+    orders = relationship("Order", back_populates="shipping_address")
