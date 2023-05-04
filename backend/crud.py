@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
-from schemas.orders import OrderCreateDetails
+from schemas.orders import OrderCreate
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -160,20 +160,20 @@ def create_order(
     return new_order
 
 
-def add_order(db: Session, order_details: OrderCreateDetails, user_id):
+def add_order(db: Session, order_details: OrderCreate, user_id):
     new_shipping_address = create_shipping_address(
         db,
-        address=order_details.shippingAddress.address,
-        city=order_details.shippingAddress.city,
-        postal_code=order_details.shippingAddress.postalCode,
-        country=order_details.shippingAddress.country
+        address=order_details.shipping_address.address,
+        city=order_details.shipping_address.city,
+        postal_code=order_details.shipping_address.postal_code,
+        country=order_details.shipping_address.country
     )
 
     new_order = create_order(
         db,
-        items_price=order_details.itemsPrice,
-        shipping_price=order_details.shippingPrice,
-        total_price=order_details.totalPrice,
+        items_price=order_details.items_price,
+        shipping_price=order_details.shipping_price,
+        total_price=order_details.total_price,
         user_id=user_id,
         shipping_address_id=new_shipping_address.id
     )

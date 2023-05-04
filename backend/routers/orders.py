@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import crud
 from auth import oauth2
 from database import get_db
-from schemas.orders import OrderDisplay, OrderCreateDetails
+from schemas.orders import OrderDisplay, OrderCreate
 from schemas.user import User
 
 router = APIRouter(
@@ -22,12 +22,13 @@ def read_order(
     db_order = crud.get_order(db, order_id=order_id)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
+
     return db_order
 
 
 @router.post('', response_model=OrderDisplay)
 def create_order(
-        order_details: OrderCreateDetails,
+        order_details: OrderCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user),
 ):

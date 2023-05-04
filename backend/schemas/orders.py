@@ -1,56 +1,51 @@
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .product import ProductEdit
-from .shipping_address import ShippingAddress, ShippingAddressOrderCreate
+from .shipping_address import ShippingAddressDisplay
 from .user import UserDetails
 
 
 class OrderItem(BaseModel):
-    quantity: float
+    quantity: int
     product: ProductEdit
 
     class Config:
         orm_mode = True
 
 
-class OrderItemInOrderCreate(BaseModel):
+class OrderItemCreate(BaseModel):
     quantity: int
     productId: int
 
 
-class OrderCreate(BaseModel):
-    # id: int
-    items_price: float
-    total_price: float
-    # is_paid: bool
-    # is_delivered: bool
-
-    user: UserDetails
-    shipping_address: ShippingAddress
-    order_items: List[OrderItem]
+class OrderBase(BaseModel):
+    shipping_price: float = Field(..., alias="shippingPrice")
+    items_price: float = Field(..., alias="itemsPrice")
+    total_price: float = Field(..., alias="totalPrice")
+    shipping_address: ShippingAddressDisplay = Field(..., alias="shippingAddress")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
-class OrderDisplay(OrderCreate):
+class OrderDisplay(OrderBase):
     id: int
-    is_paid: bool
-    is_delivered: bool
+    order_items: List[OrderItem] = Field(..., alias="orderItems")
+    user: UserDetails
+    is_paid: bool = Field(..., alias="isPaid")
+    is_delivered: bool = Field(..., alias="isDelivered")
 
     class Config:
         orm_mode = True
+        allow_population_by_field_name = True
 
 
-class OrderCreateDetails(BaseModel):
-    orderItems: List[OrderItemInOrderCreate]
-    shippingAddress: ShippingAddressOrderCreate
+class OrderCreate(OrderBase):
+    orderItems: List[OrderItemCreate]
     paymentMethod: str
-    itemsPrice: float
-    shippingPrice: float
-    totalPrice: float
 
     class Config:
         orm_mode = True
