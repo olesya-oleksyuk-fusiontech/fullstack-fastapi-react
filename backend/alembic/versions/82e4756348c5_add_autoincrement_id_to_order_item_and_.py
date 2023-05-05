@@ -1,8 +1,8 @@
-"""replace backref to back_populates
+"""add autoincrement id to Order_Item and Shipping_Address tables
 
-Revision ID: aee06e2aaf0d
-Revises: dbbb0d45a6ed
-Create Date: 2023-04-28 10:31:40.679688
+Revision ID: 82e4756348c5
+Revises: 88684e13c7f5
+Create Date: 2023-05-04 15:39:52.919671
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'aee06e2aaf0d'
-down_revision = 'dbbb0d45a6ed'
+revision = '82e4756348c5'
+down_revision = '88684e13c7f5'
 branch_labels = None
 depends_on = None
 

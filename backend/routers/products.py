@@ -16,9 +16,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{product_id}",
-            response_model=Product,
-            tags=['products'])
+@router.get("/{product_id}", response_model=Product)
 def read_product(
         product_id: int,
         db: Session = Depends(get_db),

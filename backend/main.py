@@ -6,13 +6,14 @@ from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
 from auth import authentication
-from routers import users, products, uploads
+from routers import users, products, uploads, orders
 
 app = FastAPI(title="Candyshop", root_path="/api", docs_url=None, openapi_url=None)
 app.include_router(users.router)
 app.include_router(products.router)
 app.include_router(authentication.router)
 app.include_router(uploads.router)
+app.include_router(orders.router)
 
 origins = ['http://localhost:3000', "localhost:3000", 'http://localhost:3001', 'localhost:3001']
 

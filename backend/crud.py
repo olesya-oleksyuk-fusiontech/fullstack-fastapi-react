@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
+from schemas.orders import OrderCreate
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -25,6 +26,13 @@ def filtration(query: Query, keyword: str = ''):
 
 def pagination(query: Query, skip: int = 0, limit: int = 100):
     return query.offset(skip).limit(limit)
+
+
+def get_paginated_items(items: Query, skip: int = 0, limit: int = 100):
+    items_count = items.count()
+    items_paginated = pagination(items, skip, limit).all()
+    pages = 1 if (items_count <= limit) else math.ceil(items_count / limit)
+    return items_paginated, pages
 
 
 def add_count_reviews(products: List[models.Product] | Type[models.Product] | None):
@@ -68,6 +76,13 @@ def create_product(db: Session, creator_id: int):
     db.commit()
     db.refresh(new_product)
     return new_product
+
+
+def edit_product(db: Session, new_product: ProductEdit):
+    update_data = new_product.dict()
+    db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
+    db.commit()
+    return get_product(db, product_id=new_product.id)
 
 
 def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id):
@@ -116,8 +131,79 @@ def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate)
     return get_user(db, user_id)
 
 
-def edit_product(db: Session, new_product: ProductEdit):
-    update_data = new_product.dict()
-    db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
+def create_shipping_address(db: Session, address: str, city: str, country: str, postal_code: int):
+    new_shipping_address = models.Shipping_Address(
+        address=address,
+        city=city,
+        postal_code=postal_code,
+        country=country,
+    )
+
+    db.add(new_shipping_address)
     db.commit()
-    return get_product(db, product_id=new_product.id)
+    db.refresh(new_shipping_address)
+    return new_shipping_address
+
+
+def create_order(
+        db: Session, items_price: float, shipping_price: float, total_price: float, user_id: int,
+        shipping_address_id: id):
+    new_order = models.Order(
+        items_price=items_price,
+        shipping_price=shipping_price,
+        total_price=total_price,
+        user_id=user_id,
+        shipping_address_id=shipping_address_id
+    )
+
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return new_order
+
+
+def add_order(db: Session, order_details: OrderCreate, user_id):
+    new_shipping_address = create_shipping_address(
+        db,
+        address=order_details.shipping_address.address,
+        city=order_details.shipping_address.city,
+        postal_code=order_details.shipping_address.postal_code,
+        country=order_details.shipping_address.country
+    )
+
+    new_order = create_order(
+        db,
+        items_price=order_details.items_price,
+        shipping_price=order_details.shipping_price,
+        total_price=order_details.total_price,
+        user_id=user_id,
+        shipping_address_id=new_shipping_address.id
+    )
+
+    for item in order_details.orderItems:
+        new_order_item = models.Order_Item(
+            quantity=item.quantity,
+            product_id=item.productId,
+            order_id=new_order.id
+        )
+        db.add(new_order_item)
+
+    db.commit()
+    return new_order
+
+
+def get_order(db: Session, order_id: int):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    return order
+
+
+def get_orders(db: Session, skip: int = 0, limit: int = 100):
+    orders = db.query(models.Order)
+    orders_paginated, pages = get_paginated_items(items=orders, skip=skip, limit=limit)
+    return {'orders': orders_paginated, 'pages': pages}
+
+
+def get_my_orders(user_id: int, db: Session, skip: int = 0, limit: int = 100):
+    orders = db.query(models.Order).filter(models.Order.user_id == user_id)
+    orders_paginated, pages = get_paginated_items(items=orders, skip=skip, limit=limit)
+    return {'orders': orders_paginated, 'pages': pages}
