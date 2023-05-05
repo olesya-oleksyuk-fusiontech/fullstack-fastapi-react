@@ -114,11 +114,6 @@ def get_user_by_email(db: Session, email: str):
     return user
 
 
-def get_order(db: Session, order_id: int):
-    order = db.query(models.Order).filter(models.Order.id == order_id).first()
-    return order
-
-
 def update_user(db: Session, user_id: int, new_user: ProfileUpdate | UserUpdate):
     update_data = new_user.dict(exclude_unset=True)
     if 'password' in update_data:
@@ -188,3 +183,16 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
 
     db.commit()
     return new_order
+
+
+def get_order(db: Session, order_id: int):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    return order
+
+
+def get_orders(db: Session, skip: int = 0, limit: int = 100):
+    orders = db.query(models.Order)
+    orders_count = orders.count()
+    orders_paginated = pagination(orders, skip, limit).all()
+    pages = 1 if (orders_count <= limit) else math.ceil(orders_count / limit)
+    return {'orders': orders_paginated, 'pages': pages}

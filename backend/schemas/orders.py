@@ -1,4 +1,5 @@
-from typing import List
+from datetime import datetime
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -21,7 +22,7 @@ class OrderItemCreate(BaseModel):
 
 
 class OrderBase(BaseModel):
-    shipping_price: float = Field(..., alias="shippingPrice")
+    shipping_price: Optional[float] = Field(..., alias="shippingPrice")
     items_price: float = Field(..., alias="itemsPrice")
     total_price: float = Field(..., alias="totalPrice")
     shipping_address: ShippingAddressDisplay = Field(..., alias="shippingAddress")
@@ -29,14 +30,16 @@ class OrderBase(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
+        validate_assignment = True
 
 
 class OrderDisplay(OrderBase):
-    id: int
+    id: int = Field(..., alias="_id")
     order_items: List[OrderItem] = Field(..., alias="orderItems")
     user: UserDetails
     is_paid: bool = Field(..., alias="isPaid")
     is_delivered: bool = Field(..., alias="isDelivered")
+    created_at: datetime = Field(..., alias="createdAt")
 
     class Config:
         orm_mode = True
@@ -46,6 +49,15 @@ class OrderDisplay(OrderBase):
 class OrderCreate(OrderBase):
     orderItems: List[OrderItemCreate]
     paymentMethod: str
+
+    class Config:
+        orm_mode = True
+
+
+class OrdersDisplay(BaseModel):
+    orders: List[OrderDisplay]
+    page: int
+    pages: int
 
     class Config:
         orm_mode = True
