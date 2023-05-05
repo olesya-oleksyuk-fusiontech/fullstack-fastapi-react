@@ -23,7 +23,8 @@ const OrderListScreen = () => {
   const { onClickCellHandler, adaptiveCell } = useAdaptiveCell();
 
   const orderList = useSelector((state) => state.orderList);
-  const { loading, error, orders } = orderList;
+  const { loading, error, ordersData } = orderList;
+  const orders = ordersData?.orders || [];
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;

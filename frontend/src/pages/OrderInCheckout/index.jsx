@@ -54,7 +54,7 @@ const OrderInCheckoutScreen = () => {
     if (success) {
       dispatch(clearCart());
       dispatch({ type: ORDER_CREATE_FINISH });
-      history.push(`/orders/${order.id}`);
+      history.push(`/orders/${order._id}`);
     }
   }, [history, success]);
 

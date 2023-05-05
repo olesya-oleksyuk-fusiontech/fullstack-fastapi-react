@@ -50,9 +50,9 @@ export const createOrder = (order) => async (dispatch, getState) => {
     dispatch({
       type: ORDER_CREATE_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
@@ -84,9 +84,9 @@ export const getOrderDetails = (id) => async (dispatch, getState) => {
     dispatch({
       type: ORDER_DETAILS_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
@@ -118,9 +118,9 @@ export const payOrder = (orderId, paymentResult) => async (dispatch, getState) =
     dispatch({
       type: ORDER_PAY_PROCESS_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
@@ -151,9 +151,9 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
     dispatch({
       type: ORDER_DELIVERY_PROCESS_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
@@ -185,9 +185,9 @@ export const listCustomerOrder = () => async (dispatch, getState) => {
     dispatch({
       type: ORDER_LIST_CUSTOMER_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
@@ -204,11 +204,12 @@ export const listOrders = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.get('/api/orders', config);
+    const { data } = await axios.get(`${baseURL}/orders`, config);
 
     dispatch({
       type: ORDER_LIST_SUCCESS,
@@ -219,9 +220,9 @@ export const listOrders = () => async (dispatch, getState) => {
     dispatch({
       type: ORDER_LIST_FAIL,
       payload:
-        e.response && e.response.data.message
-          ? e.response.data.message
-          : e.message,
+                e.response && e.response.data.message
+                  ? e.response.data.message
+                  : e.message,
     });
   }
 };
