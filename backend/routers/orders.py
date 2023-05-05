@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, status, APIRouter
 from sqlalchemy.orm import Session
 
 import crud
@@ -11,6 +11,17 @@ router = APIRouter(
     prefix='/orders',
     tags=['orders']
 )
+
+
+@router.get('/myorders', response_model=OrdersDisplay)
+def read_user_orders(
+        page: int = 1,
+        page_size: int = 1000,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(oauth2.get_current_user)):
+    response = crud.get_my_orders(user_id=current_user.id, db=db, skip=page_size * (page - 1), limit=page_size)
+    response.update({"page": page})
+    return response
 
 
 @router.post('', response_model=OrderDisplay)
@@ -37,12 +48,15 @@ def read_order(
 
 
 @router.get('', response_model=OrdersDisplay)
-def read_products(
+def read_orders(
         page: int = 1,
         page_size: int = 1000,
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)
 ):
+    if not current_user.isAdmin:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="Accessible to admins only")
     response = crud.get_orders(db, skip=page_size * (page - 1), limit=page_size)
     response.update({"page": page})
     return response

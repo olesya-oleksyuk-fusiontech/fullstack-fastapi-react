@@ -28,6 +28,13 @@ def pagination(query: Query, skip: int = 0, limit: int = 100):
     return query.offset(skip).limit(limit)
 
 
+def get_paginated_items(items: Query, skip: int = 0, limit: int = 100):
+    items_count = items.count()
+    items_paginated = pagination(items, skip, limit).all()
+    pages = 1 if (items_count <= limit) else math.ceil(items_count / limit)
+    return items_paginated, pages
+
+
 def add_count_reviews(products: List[models.Product] | Type[models.Product] | None):
     if isinstance(products, list):
         for item in products:
@@ -192,7 +199,11 @@ def get_order(db: Session, order_id: int):
 
 def get_orders(db: Session, skip: int = 0, limit: int = 100):
     orders = db.query(models.Order)
-    orders_count = orders.count()
-    orders_paginated = pagination(orders, skip, limit).all()
-    pages = 1 if (orders_count <= limit) else math.ceil(orders_count / limit)
+    orders_paginated, pages = get_paginated_items(items=orders, skip=skip, limit=limit)
+    return {'orders': orders_paginated, 'pages': pages}
+
+
+def get_my_orders(user_id: int, db: Session, skip: int = 0, limit: int = 100):
+    orders = db.query(models.Order).filter(models.Order.user_id == user_id)
+    orders_paginated, pages = get_paginated_items(items=orders, skip=skip, limit=limit)
     return {'orders': orders_paginated, 'pages': pages}
