@@ -169,11 +169,12 @@ export const listCustomerOrder = () => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.get('/api/orders/myorders', config);
+    const { data } = await axios.get(`${baseURL}/orders/myorders`, config);
 
     // data = the fetched order
     dispatch({

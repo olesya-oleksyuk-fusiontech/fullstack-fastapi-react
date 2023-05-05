@@ -135,7 +135,7 @@ export const orderListCustomerReducer = (
     case ORDER_LIST_CUSTOMER_SUCCESS:
       return {
         loading: false,
-        orders: action.payload,
+        ordersData: action.payload,
       };
     case ORDER_LIST_CUSTOMER_FAIL:
       return {

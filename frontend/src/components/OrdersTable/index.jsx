@@ -17,7 +17,8 @@ const OrdersTable = () => {
   const dispatch = useDispatch();
 
   const orderListCustomer = useSelector((state) => state.orderListCustomer);
-  const { loading, error, orders } = orderListCustomer;
+  const { loading, error, ordersData } = orderListCustomer;
+  const orders = ordersData?.orders || [];
 
   const { onClickCellHandler, adaptiveCell } = useAdaptiveCell();
 
