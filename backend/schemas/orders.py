@@ -32,8 +32,7 @@ class OrderBase(BaseModel):
         allow_population_by_field_name = True
         validate_assignment = True
 
-
-class OrderDisplay(OrderBase):
+class OrderInListDisplay(OrderBase):
     id: int = Field(..., alias="_id")
     order_items: List[OrderItem] = Field(..., alias="orderItems")
     user: UserDetails
@@ -45,17 +44,30 @@ class OrderDisplay(OrderBase):
         orm_mode = True
         allow_population_by_field_name = True
 
+class OrderDisplay(OrderBase):
+    id: int = Field(..., alias="_id")
+    order_items: List[OrderItem] = Field(..., alias="orderItems")
+    user: UserDetails
+    is_paid: bool = Field(..., alias="isPaid")
+    is_delivered: bool = Field(..., alias="isDelivered")
+    created_at: datetime = Field(..., alias="createdAt")
+    payment_method: str = Field(..., alias="paymentMethod")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
 
 class OrderCreate(OrderBase):
     orderItems: List[OrderItemCreate]
-    paymentMethod: str
+    payment_method: str = Field(..., alias="paymentMethod")
 
     class Config:
         orm_mode = True
 
 
 class OrdersDisplay(BaseModel):
-    orders: List[OrderDisplay]
+    orders: List[OrderInListDisplay]
     page: int
     pages: int
 

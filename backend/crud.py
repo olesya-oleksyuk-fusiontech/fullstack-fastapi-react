@@ -163,7 +163,11 @@ def create_order(
     return new_order
 
 
-def create_payment_details(db: Session, provider_id: int = 1):
+def create_payment_details(db: Session, provider_name: str = 'paypal'):
+    provider = db.query(models.Payment_Provider)\
+        .filter(models.Payment_Provider.name == provider_name).first()
+    provider_id = 1 if (provider is None) else provider.id
+
     new_payment_details = models.Payment_Details(provider_id=provider_id)
 
     db.add(new_payment_details)
@@ -171,6 +175,10 @@ def create_payment_details(db: Session, provider_id: int = 1):
     db.refresh(new_payment_details)
     return new_payment_details
 
+def get_payment_name(db: Session, provider_id: int):
+    order =  db.query(models.Payment_Provider)\
+        .filter(models.Payment_Provider.id == provider_id).first()
+    return order
 
 def add_order(db: Session, order_details: OrderCreate, user_id):
     new_shipping_address = create_shipping_address(
@@ -181,7 +189,7 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
         country=order_details.shipping_address.country
     )
 
-    new_payment_details = create_payment_details(db)
+    new_payment_details = create_payment_details(db, provider_name=order_details.payment_method)
 
     new_order = create_order(
         db,
@@ -207,7 +215,20 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
 
 def get_order(db: Session, order_id: int):
     order = db.query(models.Order).filter(models.Order.id == order_id).first()
-    return order
+    payment_name = order.payment_details.provider.name
+    return {
+        'id': order.id,
+        'order_items': order.order_items,
+        'user': order.user,
+        'is_paid': order.is_paid,
+        'is_delivered': order.is_delivered,
+        'created_at': order.created_at,
+        'shipping_price': order.shipping_price,
+        'items_price': order.items_price,
+        'total_price': order.total_price,
+        'shipping_address': order.shipping_address,
+        'payment_method': payment_name,
+    }
 
 
 def get_orders(db: Session, skip: int = 0, limit: int = 100):

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 import crud
 from auth import oauth2
 from database import get_db
-from schemas.orders import OrderDisplay, OrderCreate, OrdersDisplay
+from schemas.orders import OrderDisplay, OrderCreate, OrdersDisplay, OrderInListDisplay
 from schemas.user import User
 
 router = APIRouter(
@@ -19,12 +19,13 @@ def read_user_orders(
         page_size: int = 1000,
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)):
-    response = crud.get_my_orders(user_id=current_user.id, db=db, skip=page_size * (page - 1), limit=page_size)
+    response = crud.get_my_orders(
+        user_id=current_user.id, db=db, skip=page_size * (page - 1), limit=page_size)
     response.update({"page": page})
     return response
 
 
-@router.post('', response_model=OrderDisplay)
+@router.post('', response_model=OrderInListDisplay)
 def create_order(
         order_details: OrderCreate,
         db: Session = Depends(get_db),
