@@ -11,7 +11,7 @@ import { ORDER_PAY_PROCESS_RESET } from '../../constants/orderConstants';
 
 // dynamically adding PayPal script
 const addPayPalScript = async (setSdkReady) => {
-  const { data: clientId } = await axios.get('/api/config/paypal');
+  const { data: clientId } = await axios.get('/paypal/config');
   const script = document.createElement('script');
   script.type = 'text/javascript';
   script.async = true;
