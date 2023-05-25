@@ -147,19 +147,29 @@ def create_shipping_address(db: Session, address: str, city: str, country: str, 
 
 def create_order(
         db: Session, items_price: float, shipping_price: float, total_price: float, user_id: int,
-        shipping_address_id: id):
+        shipping_address_id: id, payment_id: id):
     new_order = models.Order(
         items_price=items_price,
         shipping_price=shipping_price,
         total_price=total_price,
         user_id=user_id,
-        shipping_address_id=shipping_address_id
+        shipping_address_id=shipping_address_id,
+        payment_id=payment_id
     )
 
     db.add(new_order)
     db.commit()
     db.refresh(new_order)
     return new_order
+
+
+def create_payment_details(db: Session, provider_id: int = 1):
+    new_payment_details = models.Payment_Details(provider_id=provider_id)
+
+    db.add(new_payment_details)
+    db.commit()
+    db.refresh(new_payment_details)
+    return new_payment_details
 
 
 def add_order(db: Session, order_details: OrderCreate, user_id):
@@ -171,13 +181,16 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
         country=order_details.shipping_address.country
     )
 
+    new_payment_details = create_payment_details(db)
+
     new_order = create_order(
         db,
         items_price=order_details.items_price,
         shipping_price=order_details.shipping_price,
         total_price=order_details.total_price,
         user_id=user_id,
-        shipping_address_id=new_shipping_address.id
+        shipping_address_id=new_shipping_address.id,
+        payment_id=new_payment_details.id
     )
 
     for item in order_details.orderItems:
