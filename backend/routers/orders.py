@@ -4,13 +4,27 @@ from sqlalchemy.orm import Session
 import crud
 from auth import oauth2
 from database import get_db
-from schemas.orders import OrderDisplay, OrderCreate, OrdersDisplay, OrderInListDisplay
+from schemas.orders import OrderDisplay, OrderCreate, OrdersDisplay, OrderInListDisplay, PaymentResult
 from schemas.user import User
 
 router = APIRouter(
     prefix='/orders',
     tags=['orders']
 )
+
+
+@router.patch("/{order_id}/pay", response_model=OrderDisplay)
+def pay_order(
+        order_id: int,
+        payment_result: PaymentResult,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(oauth2.get_current_user)
+):
+    db_order = crud.update_order_payment(db, order_id, updates=payment_result)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return db_order
 
 
 @router.get('/myorders', response_model=OrdersDisplay)
@@ -41,7 +55,7 @@ def read_order(
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)
 ):
-    db_order = crud.get_order(db, order_id=order_id)
+    db_order = crud.get_order(db, order_id)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
 

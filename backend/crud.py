@@ -2,12 +2,12 @@ import math
 from typing import List, Type
 
 from fastapi import Query, HTTPException, status
-from sqlalchemy import inspect
+from sqlalchemy import inspect, column
 from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
-from schemas.orders import OrderCreate
+from schemas.orders import OrderCreate, PaymentResult
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -164,7 +164,7 @@ def create_order(
 
 
 def create_payment_details(db: Session, provider_name: str = 'paypal'):
-    provider = db.query(models.Payment_Provider)\
+    provider = db.query(models.Payment_Provider) \
         .filter(models.Payment_Provider.name == provider_name).first()
     provider_id = 1 if (provider is None) else provider.id
 
@@ -175,10 +175,12 @@ def create_payment_details(db: Session, provider_name: str = 'paypal'):
     db.refresh(new_payment_details)
     return new_payment_details
 
+
 def get_payment_name(db: Session, provider_id: int):
-    order =  db.query(models.Payment_Provider)\
+    order = db.query(models.Payment_Provider) \
         .filter(models.Payment_Provider.id == provider_id).first()
     return order
+
 
 def add_order(db: Session, order_details: OrderCreate, user_id):
     new_shipping_address = create_shipping_address(
@@ -228,7 +230,19 @@ def get_order(db: Session, order_id: int):
         'total_price': order.total_price,
         'shipping_address': order.shipping_address,
         'payment_method': payment_name,
+        'payment_details': order.payment_details
     }
+
+
+def update_order_payment(db: Session, order_id: int, updates: PaymentResult):
+    update_data = updates.dict(exclude_unset=True)
+    order = db.query(models.Order).filter(models.Order.id == order_id)
+    payment_result_id = order.value(column('payment_id'))
+    db.query(models.Payment_Details).filter(models.Payment_Details.id == payment_result_id) \
+        .update(update_data)
+    order.update({'is_paid': True})
+    db.commit()
+    return get_order(db, order_id)
 
 
 def get_orders(db: Session, skip: int = 0, limit: int = 100):
