@@ -43,7 +43,7 @@ const OrderInfo = (
       return (
         <Message variant="success">
           Доставлено:&nbsp;
-          {toDateTime(deliveredAt, DATE_TIME_FORMAT.LONG)}
+          {toDateTime({ date: { dateStr: deliveredAt }, version: DATE_TIME_FORMAT.LONG })}
         </Message>
       );
     }
@@ -58,7 +58,10 @@ const OrderInfo = (
       return (
         <Message variant="success">
           Оплачено:&nbsp;
-          {toDateTime(paidAt, DATE_TIME_FORMAT.LONG)}
+          {toDateTime({
+            date: { dateStr: paidAt, isUtc: true },
+            version: DATE_TIME_FORMAT.LONG,
+          })}
         </Message>
       );
     }
