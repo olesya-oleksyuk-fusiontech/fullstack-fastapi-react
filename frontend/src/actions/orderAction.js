@@ -135,11 +135,12 @@ export const deliverOrder = (orderId) => async (dispatch, getState) => {
 
     const config = {
       headers: {
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.put(`/api/orders/${orderId}/deliver`, {}, config);
+    const { data } = await axios.patch(`${baseURL}/orders/${orderId}/deliver`, {}, config);
 
     // data = the fetched order
     dispatch({

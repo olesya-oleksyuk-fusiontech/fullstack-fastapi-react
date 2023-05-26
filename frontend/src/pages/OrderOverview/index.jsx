@@ -88,7 +88,7 @@ const OrderOverviewPage = () => {
                 paymentMethod={order.paymentMethod}
                 isDelivered={order.isDelivered}
                 loadingProgressDeliver={loadingDelivery}
-                deliverHandler={deliverHandler}
+                onDelivered={deliverHandler}
               />
             </Col>
           </Row>
