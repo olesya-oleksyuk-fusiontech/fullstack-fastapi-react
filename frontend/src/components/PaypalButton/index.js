@@ -44,7 +44,16 @@ const PaypalButton = ({ orderId, orderIsPaid, orderPrice }) => {
   }, [dispatch, successPay, orderIsPaid, orderPrice]);
 
   const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(orderId, paymentResult));
+    const {
+      // eslint-disable-next-line camelcase
+      id: payment_result_id, status, payer: { email_address }, update_time,
+    } = paymentResult;
+    dispatch(payOrder(orderId, {
+      payment_result_id,
+      status,
+      email_address,
+      update_time,
+    }));
   };
 
   return (

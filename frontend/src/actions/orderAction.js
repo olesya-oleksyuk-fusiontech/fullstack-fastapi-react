@@ -101,12 +101,12 @@ export const payOrder = (orderId, paymentResult) => async (dispatch, getState) =
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${userInfo.access_token}`,
+        accept: 'application/json',
+        Authorization: `Bearer ${userInfo?.access_token || null}`,
       },
     };
 
-    const { data } = await axios.put(`/api/orders/${orderId}/pay`, paymentResult, config);
+    const { data } = await axios.patch(`${baseURL}/orders/${orderId}/pay`, paymentResult, config);
 
     // data = the fetched order
     dispatch({

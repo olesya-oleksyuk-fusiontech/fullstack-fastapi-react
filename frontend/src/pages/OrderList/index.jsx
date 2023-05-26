@@ -70,7 +70,7 @@ const OrderListScreen = () => {
                 <td>{toCurrency(order.totalPrice, CURRENCY.DEFAULT)}</td>
                 <td className="td-center">
                   {order.isPaid
-                    ? (toDateTime(order.paidAt, DATE_TIME_FORMAT.SHORT))
+                    ? (toDateTime(order.paymentDetails.update_time, DATE_TIME_FORMAT.SHORT))
                     : <CrossIcon />}
                 </td>
                 <td className="td-center">

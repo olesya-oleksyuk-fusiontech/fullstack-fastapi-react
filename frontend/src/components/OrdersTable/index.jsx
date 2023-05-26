@@ -62,7 +62,7 @@ const OrdersTable = () => {
               </td>
               <td>{toCurrency(order.totalPrice, CURRENCY.USD)}</td>
               <td className="td-center">
-                {order.isPaid ? toDateTime(order.paidAt, DATE_TIME_FORMAT.SHORT)
+                {order.isPaid ? toDateTime(order.paymentDetails.update_time, DATE_TIME_FORMAT.SHORT)
                   : <CrossIcon /> }
               </td>
               <td className="td-center">
