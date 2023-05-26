@@ -2,12 +2,12 @@ import math
 from typing import List, Type
 
 from fastapi import Query, HTTPException, status
-from sqlalchemy import inspect
+from sqlalchemy import inspect, column
 from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
-from schemas.orders import OrderCreate
+from schemas.orders import OrderCreate, PaymentResult
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -147,19 +147,39 @@ def create_shipping_address(db: Session, address: str, city: str, country: str, 
 
 def create_order(
         db: Session, items_price: float, shipping_price: float, total_price: float, user_id: int,
-        shipping_address_id: id):
+        shipping_address_id: id, payment_id: id):
     new_order = models.Order(
         items_price=items_price,
         shipping_price=shipping_price,
         total_price=total_price,
         user_id=user_id,
-        shipping_address_id=shipping_address_id
+        shipping_address_id=shipping_address_id,
+        payment_id=payment_id
     )
 
     db.add(new_order)
     db.commit()
     db.refresh(new_order)
     return new_order
+
+
+def create_payment_details(db: Session, provider_name: str = 'paypal'):
+    provider = db.query(models.Payment_Provider) \
+        .filter(models.Payment_Provider.name == provider_name).first()
+    provider_id = 1 if (provider is None) else provider.id
+
+    new_payment_details = models.Payment_Details(provider_id=provider_id)
+
+    db.add(new_payment_details)
+    db.commit()
+    db.refresh(new_payment_details)
+    return new_payment_details
+
+
+def get_payment_name(db: Session, provider_id: int):
+    order = db.query(models.Payment_Provider) \
+        .filter(models.Payment_Provider.id == provider_id).first()
+    return order
 
 
 def add_order(db: Session, order_details: OrderCreate, user_id):
@@ -171,13 +191,16 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
         country=order_details.shipping_address.country
     )
 
+    new_payment_details = create_payment_details(db, provider_name=order_details.payment_method)
+
     new_order = create_order(
         db,
         items_price=order_details.items_price,
         shipping_price=order_details.shipping_price,
         total_price=order_details.total_price,
         user_id=user_id,
-        shipping_address_id=new_shipping_address.id
+        shipping_address_id=new_shipping_address.id,
+        payment_id=new_payment_details.id
     )
 
     for item in order_details.orderItems:
@@ -194,7 +217,32 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
 
 def get_order(db: Session, order_id: int):
     order = db.query(models.Order).filter(models.Order.id == order_id).first()
-    return order
+    payment_name = order.payment_details.provider.name
+    return {
+        'id': order.id,
+        'order_items': order.order_items,
+        'user': order.user,
+        'is_paid': order.is_paid,
+        'is_delivered': order.is_delivered,
+        'created_at': order.created_at,
+        'shipping_price': order.shipping_price,
+        'items_price': order.items_price,
+        'total_price': order.total_price,
+        'shipping_address': order.shipping_address,
+        'payment_method': payment_name,
+        'payment_details': order.payment_details
+    }
+
+
+def update_order_payment(db: Session, order_id: int, updates: PaymentResult):
+    update_data = updates.dict(exclude_unset=True)
+    order = db.query(models.Order).filter(models.Order.id == order_id)
+    payment_result_id = order.value(column('payment_id'))
+    db.query(models.Payment_Details).filter(models.Payment_Details.id == payment_result_id) \
+        .update(update_data)
+    order.update({'is_paid': True})
+    db.commit()
+    return get_order(db, order_id)
 
 
 def get_orders(db: Session, skip: int = 0, limit: int = 100):

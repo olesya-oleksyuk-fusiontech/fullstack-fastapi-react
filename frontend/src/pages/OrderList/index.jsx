@@ -66,16 +66,27 @@ const OrderListScreen = () => {
                   {order._id}
                 </td>
                 <td>{order.user && order.user.name}</td>
-                <td>{ toDateTime(order.createdAt, DATE_TIME_FORMAT.SHORT)}</td>
+                <td>
+                  { toDateTime({
+                    date: { dateStr: order.createdAt },
+                    version: DATE_TIME_FORMAT.SHORT,
+                  })}
+                </td>
                 <td>{toCurrency(order.totalPrice, CURRENCY.DEFAULT)}</td>
                 <td className="td-center">
                   {order.isPaid
-                    ? (toDateTime(order.paidAt, DATE_TIME_FORMAT.SHORT))
+                    ? (toDateTime({
+                      date: { dateStr: order.paymentDetails.update_time, isUtc: true },
+                      version: DATE_TIME_FORMAT.SHORT,
+                    }))
                     : <CrossIcon />}
                 </td>
                 <td className="td-center">
                   {order.isDelivered
-                    ? (toDateTime(order.deliveredAt, DATE_TIME_FORMAT.SHORT))
+                    ? (toDateTime({
+                      date: { dateStr: order.deliveredAt },
+                      version: DATE_TIME_FORMAT.SHORT,
+                    }))
                     : <CrossIcon />}
                 </td>
                 <td className="td-center">

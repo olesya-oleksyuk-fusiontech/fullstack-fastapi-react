@@ -66,7 +66,7 @@ const OrderOverviewPage = () => {
                 customerEmail={order.user.email}
                 isDelivered={order.isDelivered}
                 isPaid={order.isPaid}
-                paidAt={order.paidAt}
+                paidAt={order.paymentDetails.update_time}
                 deliveredAt={order.deliveredAt}
                 items={order.orderItems}
                 shippingStreet={order.shippingAddress.address}

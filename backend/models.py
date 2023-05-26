@@ -77,6 +77,9 @@ class Order(Base):
     shipping_address = relationship("Shipping_Address", back_populates="orders")
     order_items = relationship("Order_Item", back_populates="order")
 
+    payment_id = Column(Integer, ForeignKey("payment_details.id"))
+    payment_details = relationship("Payment_Details", back_populates="order", uselist=False)
+
 
 class Order_Item(Base):
     __tablename__ = "order_item"
@@ -98,3 +101,24 @@ class Shipping_Address(Base):
     country = Column(String(30), nullable=False)
 
     orders = relationship("Order", back_populates="shipping_address")
+
+
+class Payment_Details(Base):
+    __tablename__ = "payment_details"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    payment_result_id = Column(String(50), index=True)
+    status = Column(String(50))
+    update_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
+    create_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
+    email_address = Column(String(50))
+
+    order = relationship("Order", back_populates="payment_details", uselist=False)
+    provider_id = Column(Integer, ForeignKey("payment_provider.id"), nullable=False)
+    provider = relationship("Payment_Provider", back_populates="orders_payment_details")
+
+class Payment_Provider(Base):
+    __tablename__ = "payment_provider"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(50), nullable=False, default="unknown")
+
+    orders_payment_details = relationship("Payment_Details", back_populates="provider")

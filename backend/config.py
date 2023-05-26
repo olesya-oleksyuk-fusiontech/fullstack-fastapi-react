@@ -1,12 +1,13 @@
+from os import environ
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
-DB_HOST = os.environ.get("DB_HOST")
-DB_PORT = os.environ.get("DB_PORT")
-DB_NAME = os.environ.get("DB_NAME")
-DB_USER = os.environ.get("DB_USER")
-DB_PASS = os.environ.get("DB_PASS")
-SECRET_KEY = os.environ.get("SECRET_KEY")
-JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM")
+DB_HOST = environ.get("DB_HOST")
+DB_PORT = environ.get("DB_PORT")
+DB_NAME = environ.get("DB_NAME")
+DB_USER = environ.get("DB_USER")
+DB_PASS = environ.get("DB_PASS")
+SECRET_KEY = environ.get("SECRET_KEY")
+JWT_ALGORITHM = environ.get("JWT_ALGORITHM")
+PAYPAL_CLIENT_ID = environ.get("PAYPAL_CLIENT_ID")

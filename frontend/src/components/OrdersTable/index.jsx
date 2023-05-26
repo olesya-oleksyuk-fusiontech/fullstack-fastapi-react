@@ -58,15 +58,24 @@ const OrdersTable = () => {
                 {order._id}
               </td>
               <td>
-                {toDateTime(order.createdAt, DATE_TIME_FORMAT.SHORT)}
+                {toDateTime({
+                  date: { dateStr: order.createdAt, isUtc: true },
+                  version: DATE_TIME_FORMAT.SHORT,
+                })}
               </td>
               <td>{toCurrency(order.totalPrice, CURRENCY.USD)}</td>
               <td className="td-center">
-                {order.isPaid ? toDateTime(order.paidAt, DATE_TIME_FORMAT.SHORT)
+                {order.isPaid ? toDateTime({
+                  date: { dateStr: order.paymentDetails.update_time, isUtc: true },
+                  version: DATE_TIME_FORMAT.SHORT,
+                })
                   : <CrossIcon /> }
               </td>
               <td className="td-center">
-                {order.isDelivered ? toDateTime(order.deliveredAt, DATE_TIME_FORMAT.SHORT)
+                {order.isDelivered ? toDateTime({
+                  date: { dateStr: order.deliveredAt },
+                  version: DATE_TIME_FORMAT.SHORT,
+                })
                   : <CrossIcon /> }
               </td>
               <td className="td-center">

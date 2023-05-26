@@ -11,7 +11,7 @@ import { ORDER_PAY_PROCESS_RESET } from '../../constants/orderConstants';
 
 // dynamically adding PayPal script
 const addPayPalScript = async (setSdkReady) => {
-  const { data: clientId } = await axios.get('/api/config/paypal');
+  const { data: clientId } = await axios.get('/paypal/config');
   const script = document.createElement('script');
   script.type = 'text/javascript';
   script.async = true;
@@ -44,7 +44,16 @@ const PaypalButton = ({ orderId, orderIsPaid, orderPrice }) => {
   }, [dispatch, successPay, orderIsPaid, orderPrice]);
 
   const successPaymentHandler = (paymentResult) => {
-    dispatch(payOrder(orderId, paymentResult));
+    const {
+      // eslint-disable-next-line camelcase
+      id: payment_result_id, status, payer: { email_address }, update_time,
+    } = paymentResult;
+    dispatch(payOrder(orderId, {
+      payment_result_id,
+      status,
+      email_address,
+      update_time,
+    }));
   };
 
   return (

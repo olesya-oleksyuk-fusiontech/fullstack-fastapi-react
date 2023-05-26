@@ -8,6 +8,16 @@ from .shipping_address import ShippingAddressDisplay
 from .user import UserDetails
 
 
+class PaymentResult(BaseModel):
+    payment_result_id: str | None
+    status: str | None
+    email_address: str | None
+    update_time: datetime
+
+    class Config:
+        orm_mode = True
+
+
 class OrderItem(BaseModel):
     quantity: int
     product: ProductEdit
@@ -33,13 +43,22 @@ class OrderBase(BaseModel):
         validate_assignment = True
 
 
-class OrderDisplay(OrderBase):
+class OrderInListDisplay(OrderBase):
     id: int = Field(..., alias="_id")
     order_items: List[OrderItem] = Field(..., alias="orderItems")
     user: UserDetails
     is_paid: bool = Field(..., alias="isPaid")
     is_delivered: bool = Field(..., alias="isDelivered")
     created_at: datetime = Field(..., alias="createdAt")
+    payment_details: PaymentResult = Field(..., alias="paymentDetails")
+
+    class Config:
+        orm_mode = True
+        allow_population_by_field_name = True
+
+
+class OrderDisplay(OrderInListDisplay):
+    payment_method: str = Field(..., alias="paymentMethod")
 
     class Config:
         orm_mode = True
@@ -48,14 +67,14 @@ class OrderDisplay(OrderBase):
 
 class OrderCreate(OrderBase):
     orderItems: List[OrderItemCreate]
-    paymentMethod: str
+    payment_method: str = Field(..., alias="paymentMethod")
 
     class Config:
         orm_mode = True
 
 
 class OrdersDisplay(BaseModel):
-    orders: List[OrderDisplay]
+    orders: List[OrderInListDisplay]
     page: int
     pages: int
 

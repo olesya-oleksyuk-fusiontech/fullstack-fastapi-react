@@ -10,17 +10,18 @@ export const toCurrency = (number, format = CURRENCY.DEFAULT) => {
 
 export const addDecimals = (num) => (Math.round(num * 100) / 100).toFixed(2);
 
-export const toDateTime = (date, version, locales = LOCALES.RU) => {
-  const dateObj = new Date(date);
+export const toDateTime = ({ date: { dateStr, isUtc = false }, version, locales = LOCALES.RU }) => {
+  const localTimeObj = new Date(`${dateStr}${isUtc ? 'Z' : ''}`);
+
   switch (version) {
     case DATE_TIME_FORMAT.LONG:
-      return new Intl.DateTimeFormat(locales, { dateStyle: 'medium', timeStyle: 'short' }).format(dateObj);
+      return new Intl.DateTimeFormat(locales, { dateStyle: 'medium', timeStyle: 'short' }).format(localTimeObj);
     case DATE_TIME_FORMAT.MEDIUM:
-      return new Intl.DateTimeFormat(locales, { dateStyle: 'short', timeStyle: 'short' }).format(dateObj);
+      return new Intl.DateTimeFormat(locales, { dateStyle: 'short', timeStyle: 'short' }).format(localTimeObj);
     case DATE_TIME_FORMAT.SHORT:
-      return new Intl.DateTimeFormat('ru').format(dateObj);
+      return new Intl.DateTimeFormat('ru').format(localTimeObj);
     default:
-      return new Intl.DateTimeFormat('ru').format(dateObj);
+      return new Intl.DateTimeFormat('ru').format(localTimeObj);
   }
 };
 
