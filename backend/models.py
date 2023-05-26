@@ -106,6 +106,7 @@ class Shipping_Address(Base):
 class Payment_Details(Base):
     __tablename__ = "payment_details"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    payment_result_id = Column(String(50), index=True)
     status = Column(String(50))
     update_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
     create_time = Column(DateTime(), default=datetime.utcnow, nullable=False)
