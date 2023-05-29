@@ -37,13 +37,13 @@ const NoFoundProduct = ({ parentBlock = '' }) => {
         >
           <NoProduct logoStyle={logoStyle} />
         </div>
-        <p className="no-found-header">Упс! Товар не найден... </p>
+        <p className="no-found-header">Упс! Товар не найден</p>
       </div>
       <p className={`no-found__text ${parentBlock ? `${parentBlock}__no-found__text` : ''}`}>
-        Нам жаль, что
+        Нам жаль,
         {' '}
         {viewport !== 'xs' && <br />}
-        мы не смогли найти товары по вашему запросу
+        мы не смогли найти товары по вашему запросу...
       </p>
     </div>
   );
