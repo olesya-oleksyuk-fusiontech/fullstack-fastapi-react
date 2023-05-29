@@ -21,7 +21,7 @@ def user_authentication_headers(
 
 
 def authentication_token_from_email(
-        *, client: TestClient, email: str, test_db: Session
+        *, client: TestClient, email: str, session: Session
 ) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
@@ -31,35 +31,35 @@ def authentication_token_from_email(
     password = random_lower_string()
     name = random_lower_string()
 
-    user = crud.get_user_by_email(db, email=email)
+    user = crud.get_user_by_email(db=session, email=email)
     if not user:
         user_in_create = UserRegister(name=name, email=email, password=password)
-        user = crud.create_user(db, user=user_in_create)
+        user = crud.create_user(db=session, user=user_in_create)
     else:
         user_in_update = ProfileUpdate(password=password)
-        user = crud.update_user(db, user_id=user['user_id'], new_user=user_in_update)
+        user = crud.update_user(db=session, user_id=user['user_id'], new_user=user_in_update)
 
     return user_authentication_headers(client=client, email=email, password=password)
 
 
 def test_get_all_users(
-    client: TestClient, superuser_token_headers: dict, test_db: Session
+    client: TestClient, superuser_token_headers: dict, session: Session
 ) -> None:
     email = random_email()
     name = random_lower_string()
     password = random_lower_string()
     user_in = UserRegister(name=name, email=email, password=password)
-    crud.create_user(db=test_db, user=user_in)
+    crud.create_user(db=session, user=user_in)
 
     email2 = random_email()
     name2 = random_lower_string()
     password2 = random_lower_string()
     user_in2 = UserRegister(name=name2, email=email2, password=password2)
-    crud.create_user(db=test_db, user=user_in2)
+    crud.create_user(db=session, user=user_in2)
 
     r = client.get("/users", headers=superuser_token_headers)
     all_users = r.json()
 
-    assert len(all_users) > 1
+    assert len(all_users) == 3, "Wrong number of User records in the DB"
     for item in all_users:
-        assert "email" in item
+        assert "email" in item, "No email found for the User record"

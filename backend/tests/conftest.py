@@ -1,4 +1,5 @@
 from typing import Dict, Generator
+import sqlalchemy as sa
 
 import pytest
 from fastapi.testclient import TestClient
@@ -20,31 +21,50 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-def override_get_db():
-    try:
-        db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
+# Set up the database once
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
-
-@pytest.fixture()
-def test_db():
-    Base.metadata.create_all(bind=engine)
-    yield TestingSessionLocal()
-    Base.metadata.drop_all(bind=engine)
-
-
+# This fixture creates a nested transaction,
+# recreates it when the application code calls session.commit
+# and rolls it back at the end.
+# Based on: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
 @pytest.fixture(scope="session")
-def db() -> Generator:
-    yield TestingSessionLocal()
+def session():
+    connection = engine.connect()
+    transaction = connection.begin()
+    session = TestingSessionLocal(bind=connection)
+
+    # Begin a nested transaction (using SAVEPOINT).
+    nested = connection.begin_nested()
+
+    # If the application code calls session.commit, it will end the nested
+    # transaction. Need to start a new one when that happens.
+    @sa.event.listens_for(session, "after_transaction_end")
+    def end_savepoint(session, transaction):
+        nonlocal nested
+        if not nested.is_active:
+            nested = connection.begin_nested()
+
+    yield session
+
+    # Rollback the overall transaction, restoring the state before the test ran.
+    session.close()
+    transaction.rollback()
+    connection.close()
 
 
-@pytest.fixture(scope="module")
-def client() -> Generator:
+# A fixture for the fastapi test client which depends on the previous session fixture.
+# Instead of creating a new session in the dependency override as before,
+# it uses the one provided by the session fixture.
+@pytest.fixture(scope="session")
+def client(session):
+    def override_get_db():
+        yield session
+
     app.dependency_overrides[get_db] = override_get_db
-    with TestClient(app) as c:
-        yield c
+    yield TestClient(app)
+    del app.dependency_overrides[get_db]
 
 
 @pytest.fixture(scope="module")
@@ -53,7 +73,7 @@ def superuser_token_headers(client: TestClient) -> Dict[str, str]:
 
 
 @pytest.fixture(scope="module")
-def normal_user_token_headers(client: TestClient, test_db: Session) -> Dict[str, str]:
+def normal_user_token_headers(client: TestClient, session: Session) -> Dict[str, str]:
     return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, test_db=test_db
+        client=client, email=settings.EMAIL_TEST_USER, test_db=session
     )
