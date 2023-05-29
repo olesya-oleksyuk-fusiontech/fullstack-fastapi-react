@@ -22,7 +22,7 @@ const Receipt = (
     isDelivered,
     loadingProgressDeliver,
     children,
-    deliverHandler,
+    onDelivered,
   },
 ) => {
   const totalProductPriceInCurrency = () => toCurrency(totalProductPrice, currency);
@@ -47,7 +47,7 @@ const Receipt = (
       return (
         <ListGroupItem>
           <div className="d-grid">
-            <ButtonCandyPrimary type="button" onClick={deliverHandler} fullWidth>
+            <ButtonCandyPrimary type="button" onClick={onDelivered} fullWidth>
               {loadingProgressDeliver ? 'Загрузка...' : 'Отметить как доставлено'}
             </ButtonCandyPrimary>
           </div>

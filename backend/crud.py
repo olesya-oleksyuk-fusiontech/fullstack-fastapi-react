@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 import models
 from hash import Hash
-from schemas.orders import OrderCreate, PaymentResult
+from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserRegister
@@ -224,6 +224,7 @@ def get_order(db: Session, order_id: int):
         'user': order.user,
         'is_paid': order.is_paid,
         'is_delivered': order.is_delivered,
+        'delivered_at': order.delivered_at,
         'created_at': order.created_at,
         'shipping_price': order.shipping_price,
         'items_price': order.items_price,
@@ -241,6 +242,12 @@ def update_order_payment(db: Session, order_id: int, updates: PaymentResult):
     db.query(models.Payment_Details).filter(models.Payment_Details.id == payment_result_id) \
         .update(update_data)
     order.update({'is_paid': True})
+    db.commit()
+    return get_order(db, order_id)
+
+
+def update_order_delivery(db: Session, order_id: int, updates: DeliveryResult):
+    db.query(models.Order).filter(models.Order.id == order_id).update(updates)
     db.commit()
     return get_order(db, order_id)
 

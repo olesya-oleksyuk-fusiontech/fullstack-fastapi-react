@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, status, APIRouter
 from sqlalchemy.orm import Session
+import datetime
 
 import crud
 from auth import oauth2
@@ -21,6 +22,23 @@ def pay_order(
         current_user: User = Depends(oauth2.get_current_user)
 ):
     db_order = crud.update_order_payment(db, order_id, updates=payment_result)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    return db_order
+
+
+@router.patch("/{order_id}/deliver", response_model=OrderDisplay)
+def deliver_order(
+        order_id: int,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(oauth2.get_current_user)
+):
+    delivery_updates = {
+        'is_delivered': True,
+        'delivered_at': datetime.datetime.now()
+    }
+    db_order = crud.update_order_delivery(db, order_id, updates=delivery_updates)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
 

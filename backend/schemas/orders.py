@@ -17,6 +17,10 @@ class PaymentResult(BaseModel):
     class Config:
         orm_mode = True
 
+class DeliveryResult(BaseModel):
+    is_delivered: bool
+    delivered_at: datetime
+
 
 class OrderItem(BaseModel):
     quantity: int
@@ -51,6 +55,7 @@ class OrderInListDisplay(OrderBase):
     is_delivered: bool = Field(..., alias="isDelivered")
     created_at: datetime = Field(..., alias="createdAt")
     payment_details: PaymentResult = Field(..., alias="paymentDetails")
+    delivered_at: datetime | None = Field(..., alias="deliveredAt")
 
     class Config:
         orm_mode = True
