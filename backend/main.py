@@ -47,8 +47,7 @@ async def openapi():
     return app.openapi_schema
 
 
-
-app.mount('/images', StaticFiles(directory='images'), name='images')
+# app.mount('/images', StaticFiles(directory='images'), name='images')
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
