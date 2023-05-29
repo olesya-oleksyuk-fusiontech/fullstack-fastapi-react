@@ -46,6 +46,7 @@ class UserRegister(BaseModel):
     name: str
     email: str
     password: str
+    isAdmin: Optional[bool] = False
 
     class Config:
         orm_mode = True
