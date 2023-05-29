@@ -218,21 +218,8 @@ def add_order(db: Session, order_details: OrderCreate, user_id):
 def get_order(db: Session, order_id: int):
     order = db.query(models.Order).filter(models.Order.id == order_id).first()
     payment_name = order.payment_details.provider.name
-    return {
-        'id': order.id,
-        'order_items': order.order_items,
-        'user': order.user,
-        'is_paid': order.is_paid,
-        'is_delivered': order.is_delivered,
-        'delivered_at': order.delivered_at,
-        'created_at': order.created_at,
-        'shipping_price': order.shipping_price,
-        'items_price': order.items_price,
-        'total_price': order.total_price,
-        'shipping_address': order.shipping_address,
-        'payment_method': payment_name,
-        'payment_details': order.payment_details
-    }
+    order.payment_method = payment_name
+    return order
 
 
 def update_order_payment(db: Session, order_id: int, updates: PaymentResult):
