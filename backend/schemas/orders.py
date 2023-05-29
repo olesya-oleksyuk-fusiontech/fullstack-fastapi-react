@@ -14,6 +14,8 @@ class PaymentResult(BaseModel):
     email_address: str | None
     update_time: datetime
 
+    class Config:
+        orm_mode = True
 
 class DeliveryResult(BaseModel):
     is_delivered: bool
