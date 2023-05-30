@@ -5,7 +5,6 @@ from sqlalchemy.orm import Session
 
 import crud
 from auth import oauth2
-from auth.oauth2 import oauth2_schema
 from database import get_db
 from schemas.user import User, UserToRegister, UserDetails, ProfileUpdate, UserUpdate, UserRegistered
 
@@ -15,10 +14,10 @@ router = APIRouter(
 )
 
 
-@router.get('', response_model=List[UserDetails])
+@router.get('')
 def get_all_users(
         db: Session = Depends(get_db),
-        current_user: User = Depends(oauth2.get_current_user)):
+        current_user: User = Depends(oauth2.get_current_user)) -> List[UserDetails]:
     if not current_user.isAdmin:
         raise HTTPException(status_code=403, detail="No permission. Admins only")
     return crud.get_all_users(db)
@@ -66,11 +65,11 @@ async def update_user(user: UserUpdate,
     return updated_user
 
 
-@router.get('/{user_id}', response_model=UserDetails)
+@router.get('/{user_id}')
 def get_user(user_id: int,
              db: Session = Depends(get_db),
              current_user: User = Depends(oauth2.get_current_user)
-             ):
+             ) -> UserDetails:
     if not current_user.isAdmin:
         raise HTTPException(status_code=403, detail="No permission. Admins only")
     db_user = crud.get_user(db, user_id)
