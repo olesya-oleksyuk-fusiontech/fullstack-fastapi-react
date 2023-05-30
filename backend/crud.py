@@ -100,9 +100,16 @@ def create_user(db: Session, user: UserRegister):
         password=Hash.bcrypt(user.password),
         isAdmin=user.isAdmin if (user.isAdmin is not None) else False
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        if e.orig.errno == 1062:
+            raise HTTPException(status_code=409, detail=e.orig.msg)
+        else:
+            raise HTTPException(status_code=500, detail='Internal Server Error')
+
     return new_user
 
 
