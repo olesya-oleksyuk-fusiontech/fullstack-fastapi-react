@@ -5,8 +5,17 @@ from sqlalchemy.orm import Session
 
 import crud
 from core.config import settings
-from schemas.user import UserRegister, ProfileUpdate
+from schemas.user import UserRegister, ProfileUpdate, User
 from tests.utils.utils import random_lower_string, random_email
+
+
+def add_test_user_to_db(session: Session) -> User:
+    email = random_email()
+    name = random_lower_string()
+    password = random_lower_string()
+    user_in = UserRegister(name=name, email=email, password=password)
+    user = crud.create_user(db=session, user=user_in)
+    return user
 
 
 def user_authentication_headers(
@@ -46,24 +55,18 @@ def authentication_token_from_email(
 def test_get_all_users(
         client: TestClient, superuser_token_headers: dict, session: Session
 ) -> None:
-    email = random_email()
-    name = random_lower_string()
-    password = random_lower_string()
-    user_in = UserRegister(name=name, email=email, password=password)
-    crud.create_user(db=session, user=user_in)
-
-    email2 = random_email()
-    name2 = random_lower_string()
-    password2 = random_lower_string()
-    user_in2 = UserRegister(name=name2, email=email2, password=password2)
-    crud.create_user(db=session, user=user_in2)
+    user_in1 = add_test_user_to_db(session)
+    user_in2 = add_test_user_to_db(session)
 
     r = client.get("/users", headers=superuser_token_headers)
     all_users = r.json()
 
     assert len(all_users) == 3, "Wrong number of User records in the DB"
+    user_names = []
     for item in all_users:
-        assert "email" in item, "No email found for the User record"
+        user_names.append(item['name'])
+        assert "email" in item, "Email is missing in User DB record"
+    assert user_in1.name in user_names and user_in2.name in user_names, 'Some of User names are missing'
 
 
 def test_get_user_profile_me(
@@ -80,16 +83,11 @@ def test_get_user_profile_me(
 def test_get_existing_user(
         client: TestClient, superuser_token_headers: dict, session: Session
 ) -> None:
-    email = random_email()
-    name = random_lower_string()
-    password = random_lower_string()
-    user_in = UserRegister(name=name, email=email, password=password)
-    user = crud.create_user(db=session, user=user_in)
-    user_id = user.id
+    user_in = add_test_user_to_db(session)
     r = client.get(
-        f"users/{user_id}", headers=superuser_token_headers,
+        f"users/{user_in.id}", headers=superuser_token_headers,
     )
     api_user = r.json()
-    existing_user = crud.get_user_by_email(db=session, email=email)
+    existing_user = crud.get_user_by_email(db=session, email=user_in.email)
     assert existing_user
     assert existing_user.email == api_user["email"]
