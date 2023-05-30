@@ -121,7 +121,7 @@ const EditProfileInfoForm = () => {
             inputRef={passwordRef}
             blockClass="profile-page"
           >
-            Пароль
+            Новый пароль
           </FormGroupBorderless>
           <FormGroupBorderless
             controlId="confirmPassword"
@@ -132,7 +132,7 @@ const EditProfileInfoForm = () => {
             inputRef={confirmPasswordRef}
             blockClass="profile-page"
           >
-            Повторите пароль
+            Повторите новый пароль
           </FormGroupBorderless>
           <div className="edit-profile__update-btn">
             <ButtonCandyPrimary type="submit" variant="light" fullWidth>Обновить</ButtonCandyPrimary>
