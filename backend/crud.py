@@ -10,7 +10,7 @@ from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
-from schemas.user import ProfileUpdate, UserUpdate, UserRegister
+from schemas.user import ProfileUpdate, UserUpdate, UserToRegister
 
 
 def object_as_dict(obj):
@@ -93,15 +93,23 @@ def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id
     db.refresh(db_review)
 
 
-def create_user(db: Session, user: UserRegister):
+def create_user(db: Session, user: UserToRegister):
     new_user = models.User(
         name=user.name,
         email=user.email,
-        password=Hash.bcrypt(user.password)
+        password=Hash.bcrypt(user.password),
+        isAdmin=user.isAdmin if (user.isAdmin is not None) else False
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except Exception as e:
+        if e.orig.errno == 1062:
+            raise HTTPException(status_code=409, detail=e.orig.msg)
+        else:
+            raise HTTPException(status_code=500, detail='Internal Server Error')
+
     return new_user
 
 

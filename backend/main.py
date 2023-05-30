@@ -47,7 +47,6 @@ async def openapi():
     return app.openapi_schema
 
 
-
 app.mount('/images', StaticFiles(directory='images'), name='images')
 
 if __name__ == "__main__":
