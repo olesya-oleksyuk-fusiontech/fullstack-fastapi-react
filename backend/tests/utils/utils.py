@@ -29,7 +29,7 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     return headers
 
 
-def test_list_equal(expected: list, actual: list) -> str:
+def are_list_equal(expected: list, actual: list) -> str:
     seen = set()
     duplicates = []
     for x in actual:

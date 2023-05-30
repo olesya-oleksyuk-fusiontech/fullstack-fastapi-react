@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 import crud
 from core.config import settings
 from schemas.user import UserToRegister, ProfileUpdate, User
-from tests.utils.utils import random_lower_string, random_email, test_list_equal
+from tests.utils.utils import random_lower_string, random_email, are_list_equal
 
 
 def add_test_user_to_db(session: Session, email: str | None = None) -> User:
@@ -80,15 +80,22 @@ def test_get_user_profile_me(
 ) -> None:
     r = client.get("/users/profile", headers=superuser_token_headers)
     current_user = r.json()
+
+    res_keys_expected = ['id', 'email', 'name', 'isAdmin']
+
+    comparison_result = are_list_equal(res_keys_expected, list(current_user.keys()))
     assert current_user
+    assert not comparison_result, comparison_result
     assert current_user["isAdmin"] is True
     assert current_user["name"] == settings.FIRST_SUPERUSER_NAME
     assert current_user["email"] == settings.FIRST_SUPERUSER_EMAIL
 
 
 def test_get_existing_user(
-        client: TestClient, superuser_token_headers: dict, session: Session
-) -> None:
+        client: TestClient,
+        superuser_token_headers: dict,
+        session: Session,
+        normal_user_token_headers: Dict[str, str]) -> None:
     user_in = add_test_user_to_db(session)
     r = client.get(
         f"users/{user_in.id}", headers=superuser_token_headers,
@@ -97,6 +104,9 @@ def test_get_existing_user(
     existing_user = crud.get_user_by_email(db=session, email=user_in.email)
     assert existing_user
     assert existing_user.email == api_user["email"]
+
+    r = client.get(f"users/{user_in.id}", headers=normal_user_token_headers)
+    assert r.status_code == 403, 'Non-admin has access to change another user profile'
 
 
 def test_create_new_user(
