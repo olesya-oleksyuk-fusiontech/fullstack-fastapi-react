@@ -5,15 +5,15 @@ from sqlalchemy.orm import Session
 
 import crud
 from core.config import settings
-from schemas.user import UserRegister, ProfileUpdate, User
-from tests.utils.utils import random_lower_string, random_email
+from schemas.user import UserToRegister, ProfileUpdate, User
+from tests.utils.utils import random_lower_string, random_email, test_list_equal
 
 
 def add_test_user_to_db(session: Session, email: str | None = None) -> User:
     email = random_email() if (email is None) else email
     name = random_lower_string()
     password = random_lower_string()
-    user_in = UserRegister(name=name, email=email, password=password)
+    user_in = UserToRegister(name=name, email=email, password=password)
     user = crud.create_user(db=session, user=user_in)
     return user
 
@@ -31,14 +31,14 @@ def user_authentication_headers(
 
 
 def authentication_token_from_email(
-        *, client: TestClient, email: str, session: Session
+        *, client: TestClient, email: str, password: str | None = None, session: Session
 ) -> Dict[str, str]:
     """
     Return a valid token for the user with given email.
 
     If the user doesn't exist it is created first.
     """
-    password = random_lower_string()
+    password = random_lower_string() if (password is None) else password
 
     try:
         user = crud.get_user_by_email(db=session, email=email)
@@ -46,17 +46,8 @@ def authentication_token_from_email(
         crud.update_user(db=session, user_id=user['user_id'], new_user=user_in_update)
     except:
         new_user_name = random_lower_string()
-        user_in_create = UserRegister(name= new_user_name, email=email, password=password)
+        user_in_create = UserToRegister(name=new_user_name, email=email, password=password)
         crud.create_user(db=session, user=user_in_create)
-    #
-    #
-    # user = crud.get_user_by_email(db=session, email=email)
-    # if not user:
-    #     user_in_create = UserRegister(name=name, email=email, password=password)
-    #     user = crud.create_user(db=session, user=user_in_create)
-    # else:
-    #     user_in_update = ProfileUpdate(password=password)
-    #     user = crud.update_user(db=session, user_id=user['user_id'], new_user=user_in_update)
 
     return user_authentication_headers(client=client, email=email, password=password)
 
@@ -123,3 +114,34 @@ def test_create_new_user(
     user = crud.get_user_by_email(db=session, email=email)
     assert user
     assert user.email == created_user["email"]
+
+
+def test_change_user_info(
+        client: TestClient,
+        superuser_token_headers: dict,
+        session: Session,
+        normal_user_token_headers: Dict[str, str]
+) -> None:
+    normal_user_old = crud.get_user_by_email(db=session, email=settings.EMAIL_TEST_USER)
+    normal_user_old_data = {"name": normal_user_old.name, "email": normal_user_old.email}
+    normal_user_updates = ProfileUpdate(name=random_lower_string())
+    r = client.patch("/users/profile", headers=normal_user_token_headers,
+                     json=normal_user_updates.dict(exclude_none=True))
+    normal_user_updated = r.json()
+    assert normal_user_old_data["name"] != normal_user_updated["name"]
+    assert normal_user_old_data["email"] == normal_user_updated["email"]
+
+    new_user = add_test_user_to_db(session)
+    new_user_old_data = {"name": new_user.name}
+    new_user_updates = ProfileUpdate(name=random_lower_string())
+
+    r = client.patch(f"users/{new_user.id}", headers=normal_user_token_headers,
+                     json=new_user_updates.dict(exclude_none=True))
+    assert r.status_code == 403, 'Non-admin has access to change another user profile'
+
+    r = client.patch(f"users/{new_user.id}", headers=superuser_token_headers,
+                     json=new_user_updates.dict(exclude_none=True))
+    new_user_updated_by_admin = r.json()
+
+    assert 200 == r.status_code, f"Something went wrong, status code: {r.status_code}"
+    assert new_user_old_data["name"] != new_user_updated_by_admin["name"]
