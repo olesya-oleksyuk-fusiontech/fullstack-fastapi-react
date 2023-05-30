@@ -16,7 +16,11 @@ router = APIRouter(
 
 
 @router.get('', response_model=List[UserDetails])
-def get_all_users(db: Session = Depends(get_db)):
+def get_all_users(
+        db: Session = Depends(get_db),
+        current_user: User = Depends(oauth2.get_current_user)):
+    if current_user.isAdmin == False:
+        raise HTTPException(status_code=403, detail="No permission. Admins only")
     return crud.get_all_users(db)
 
 
