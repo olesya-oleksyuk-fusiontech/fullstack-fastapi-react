@@ -91,3 +91,20 @@ def test_get_existing_user(
     existing_user = crud.get_user_by_email(db=session, email=user_in.email)
     assert existing_user
     assert existing_user.email == api_user["email"]
+
+
+def test_create_new_user(
+        client: TestClient, session: Session
+) -> None:
+    email = random_email()
+    name = random_lower_string()
+    password = random_lower_string()
+    data = {"email": email, "password": password, 'name': name}
+    r = client.post(
+        '/users', json=data,
+    )
+    assert 200 <= r.status_code < 300
+    created_user = r.json()
+    user = crud.get_user_by_email(db=session, email=email)
+    assert user
+    assert user.email == created_user["email"]
