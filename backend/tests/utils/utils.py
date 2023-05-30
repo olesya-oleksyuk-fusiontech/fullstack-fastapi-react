@@ -27,3 +27,19 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
+
+
+def test_list_equal(expected: list, actual: list) -> str:
+    seen = set()
+    duplicates = []
+    for x in actual:
+        if x in seen:
+            duplicates.append(x)
+        else:
+            seen.add(x)
+    lacks = set(expected) - set(actual)
+    extra = set(actual) - set(expected)
+    message = f"Lacks elements {lacks} " if lacks else ''
+    message += f"Extra elements {extra}" if extra else ''
+    message += f"Duplicate elements {duplicates}" if duplicates else ''
+    return message
