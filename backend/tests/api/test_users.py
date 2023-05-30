@@ -8,6 +8,7 @@ from core.config import settings
 from schemas.user import UserRegister, ProfileUpdate
 from tests.utils.utils import random_lower_string, random_email
 
+
 def user_authentication_headers(
         *, client: TestClient, email: str, password: str
 ) -> Dict[str, str]:
@@ -43,7 +44,7 @@ def authentication_token_from_email(
 
 
 def test_get_all_users(
-    client: TestClient, superuser_token_headers: dict, session: Session
+        client: TestClient, superuser_token_headers: dict, session: Session
 ) -> None:
     email = random_email()
     name = random_lower_string()
@@ -63,3 +64,14 @@ def test_get_all_users(
     assert len(all_users) == 3, "Wrong number of User records in the DB"
     for item in all_users:
         assert "email" in item, "No email found for the User record"
+
+
+def test_get_user_profile_me(
+        client: TestClient, superuser_token_headers: Dict[str, str]
+) -> None:
+    r = client.get("/users/profile", headers=superuser_token_headers)
+    current_user = r.json()
+    assert current_user
+    assert current_user["isAdmin"] is True
+    assert current_user["name"] == settings.FIRST_SUPERUSER_NAME
+    assert current_user["email"] == settings.FIRST_SUPERUSER_EMAIL

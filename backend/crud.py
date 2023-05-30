@@ -97,7 +97,8 @@ def create_user(db: Session, user: UserRegister):
     new_user = models.User(
         name=user.name,
         email=user.email,
-        password=Hash.bcrypt(user.password)
+        password=Hash.bcrypt(user.password),
+        isAdmin=user.isAdmin if (user.isAdmin is not None) else False
     )
     db.add(new_user)
     db.commit()
