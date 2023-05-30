@@ -42,7 +42,7 @@ class UserDisplay(BaseModel):
         orm_mode = True
 
 
-class UserRegister(BaseModel):
+class UserToRegister(BaseModel):
     name: str
     email: str
     password: str
@@ -62,7 +62,13 @@ class UserDetails(BaseModel):
         orm_mode = True
 
 
+class UserRegistered(UserDetails):
+    token_type: str
+    access_token: str
+
+
 class UserUpdate(UserDetails):
+    id: Optional[str] = None
     name: Optional[str] = None
     email: Optional[str] = None
     isAdmin: Optional[bool] = None
