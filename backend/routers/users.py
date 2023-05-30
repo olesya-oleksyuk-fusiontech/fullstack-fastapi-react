@@ -7,7 +7,7 @@ import crud
 from auth import oauth2
 from auth.oauth2 import oauth2_schema
 from database import get_db
-from schemas.user import User, UserRegister, UserDetails, ProfileUpdate, UserUpdate
+from schemas.user import User, UserToRegister, UserDetails, ProfileUpdate, UserUpdate, UserRegistered
 
 router = APIRouter(
     prefix='/users',
@@ -19,71 +19,51 @@ router = APIRouter(
 def get_all_users(
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)):
-    if current_user.isAdmin == False:
+    if not current_user.isAdmin:
         raise HTTPException(status_code=403, detail="No permission. Admins only")
     return crud.get_all_users(db)
 
 
 @router.post('')
 def register_user(
-        user: UserRegister, db: Session = Depends(get_db)
-):
+        user: UserToRegister, db: Session = Depends(get_db)
+) -> UserRegistered:
     new_user = crud.create_user(db=db, user=user)
     access_token = oauth2.create_access_token(data={'sub': user.email})
-
-    return {
-        'id': new_user.id,
-        'name': new_user.name,
-        'email': new_user.email,
-        'isAdmin': new_user.isAdmin,
-        'access_token': access_token,
-        'token_type': 'bearer',
-    }
+    new_user.token_type = 'bearer'
+    new_user.access_token = access_token
+    return new_user
 
 
 @router.get('/profile', response_model=UserDetails)
 def get_user(
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)
-):
+) -> UserDetails:
     db_user = crud.get_user(db, current_user.id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User is not found")
-    return {
-        'id': db_user.id,
-        'name': db_user.name,
-        'email': db_user.email,
-        'isAdmin': db_user.isAdmin,
-    }
+    return db_user
 
 
 @router.patch("/profile")
 async def update_user(user: ProfileUpdate,
                       db: Session = Depends(get_db),
-                      current_user: User = Depends(oauth2.get_current_user),
-                      token: str = Depends(oauth2_schema)):
+                      current_user: User = Depends(oauth2.get_current_user)
+                      ) -> UserDetails:
     updated_user = crud.update_user(db, current_user.id, user)
-    return {
-        'id': updated_user.id,
-        'name': updated_user.name,
-        'email': updated_user.email,
-        'isAdmin': updated_user.isAdmin,
-        'access_token': token,
-        'token_type': 'bearer',
-    }
+    return updated_user
 
 
 @router.patch("/{user_id}")
 async def update_user(user: UserUpdate,
+                      user_id: int,
                       db: Session = Depends(get_db),
-                      current_user: User = Depends(oauth2.get_current_user)):
-    updated_user = crud.update_user(db, user.id, user)
-    return {
-        'id': updated_user.id,
-        'name': updated_user.name,
-        'email': updated_user.email,
-        'isAdmin': updated_user.isAdmin,
-    }
+                      current_user: User = Depends(oauth2.get_current_user)) -> UserDetails:
+    if not current_user.isAdmin:
+        raise HTTPException(status_code=403, detail="No permission. Admins only")
+    updated_user = crud.update_user(db, user_id, user)
+    return updated_user
 
 
 @router.get('/{user_id}', response_model=UserDetails)
@@ -91,6 +71,8 @@ def get_user(user_id: int,
              db: Session = Depends(get_db),
              current_user: User = Depends(oauth2.get_current_user)
              ):
+    if not current_user.isAdmin:
+        raise HTTPException(status_code=403, detail="No permission. Admins only")
     db_user = crud.get_user(db, user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User is not found")
