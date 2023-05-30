@@ -75,3 +75,21 @@ def test_get_user_profile_me(
     assert current_user["isAdmin"] is True
     assert current_user["name"] == settings.FIRST_SUPERUSER_NAME
     assert current_user["email"] == settings.FIRST_SUPERUSER_EMAIL
+
+
+def test_get_existing_user(
+        client: TestClient, superuser_token_headers: dict, session: Session
+) -> None:
+    email = random_email()
+    name = random_lower_string()
+    password = random_lower_string()
+    user_in = UserRegister(name=name, email=email, password=password)
+    user = crud.create_user(db=session, user=user_in)
+    user_id = user.id
+    r = client.get(
+        f"users/{user_id}", headers=superuser_token_headers,
+    )
+    api_user = r.json()
+    existing_user = crud.get_user_by_email(db=session, email=email)
+    assert existing_user
+    assert existing_user.email == api_user["email"]
