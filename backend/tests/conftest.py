@@ -1,7 +1,7 @@
-from typing import Dict, Generator
-import sqlalchemy as sa
+from typing import Dict
 
 import pytest
+import sqlalchemy as sa
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -10,7 +10,7 @@ from config import DB_USER, DB_PASS, DB_HOST, DB_PORT, TEST_DB_NAME
 from core.config import settings
 from database import Base, get_db
 from main import app
-from tests.api.test_users import authentication_token_from_email
+from tests.utils.user import authentication_token_from_email
 from tests.utils.utils import get_superuser_token_headers
 
 TEST_DATABASE_URL = f'mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{TEST_DB_NAME}'
@@ -20,10 +20,10 @@ engine = create_engine(
 )
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 # Set up the database once
 Base.metadata.drop_all(bind=engine)
 Base.metadata.create_all(bind=engine)
+
 
 # This fixture creates a nested transaction,
 # recreates it when the application code calls session.commit
@@ -75,5 +75,7 @@ def superuser_token_headers(client: TestClient) -> Dict[str, str]:
 @pytest.fixture(scope="module")
 def normal_user_token_headers(client: TestClient, session: Session) -> Dict[str, str]:
     return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, password=settings.EMAIL_TEST_PASSWORD, session=session
+        client=client,
+        email=settings.EMAIL_TEST_USER,
+        password=settings.EMAIL_TEST_PASSWORD, session=session
     )
