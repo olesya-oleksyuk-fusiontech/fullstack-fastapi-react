@@ -6,6 +6,7 @@ from sqlalchemy import inspect, column
 from sqlalchemy.orm import Session
 
 import models
+from constants import Product_info
 from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
 from schemas.product import ProductEdit
@@ -62,15 +63,15 @@ def get_product(db: Session, product_id: int):
 
 def create_product(db: Session, creator_id: int):
     new_product = models.Product(
-        name='Наименование',
-        image='images/sample.jpg',
-        brand='Бренд',
-        category='Категория',
-        description='Описание',
-        rating=0,
-        price=0,
-        countInStock=0,
-        creator_id=creator_id
+        name=Product_info.name,
+        image=Product_info.image,
+        brand=Product_info.brand,
+        category=Product_info.category,
+        description=Product_info.description,
+        rating=Product_info.rating,
+        price=Product_info.price,
+        countInStock=Product_info.countInStock,
+        creator_id=creator_id,
     )
     db.add(new_product)
     db.commit()
