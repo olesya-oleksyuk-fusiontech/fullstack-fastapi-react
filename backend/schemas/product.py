@@ -21,6 +21,12 @@ class ProductEdit(BaseModel):
     class Config:
         orm_mode = True
 
+class Product(ProductEdit):
+    creator_id: int
+    created_on: datetime
+
+    class Config:
+        orm_mode = True
 
 class ProductOnAdminList(ProductEdit):
     rating: int

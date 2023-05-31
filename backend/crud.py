@@ -10,7 +10,7 @@ from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
 from schemas.product import ProductEdit
 from schemas.review import ReviewCreate
-from schemas.user import ProfileUpdate, UserUpdate, UserToRegister
+from schemas.user import ProfileUpdate, UserUpdate, UserToRegister, User
 
 
 def object_as_dict(obj):
@@ -105,7 +105,7 @@ def create_user(db: Session, user: UserToRegister):
         db.commit()
         db.refresh(new_user)
     except Exception as e:
-        if e.orig.errno == 1062:
+        if hasattr(e, 'orig') and e.orig.errno == 1062:
             raise HTTPException(status_code=409, detail=e.orig.msg)
         else:
             raise HTTPException(status_code=500, detail='Internal Server Error')
@@ -121,7 +121,7 @@ def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> User:
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

@@ -34,7 +34,7 @@ def test_get_all_users(
 
 
 def test_get_user_profile_me(
-        client: TestClient, superuser_token_headers: Dict[str, str]
+        client: TestClient, session: Session, superuser_token_headers: dict
 ) -> None:
     r = client.get("/users/profile", headers=superuser_token_headers)
     current_user = r.json()
