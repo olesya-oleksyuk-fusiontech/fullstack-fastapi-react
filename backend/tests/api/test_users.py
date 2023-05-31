@@ -6,16 +6,8 @@ from sqlalchemy.orm import Session
 import crud
 from core.config import settings
 from schemas.user import UserToRegister, ProfileUpdate, User
+from tests.utils.user import add_test_user_to_db
 from tests.utils.utils import random_lower_string, random_email, are_list_equal
-
-
-def add_test_user_to_db(session: Session, email: str | None = None) -> User:
-    email = random_email() if (email is None) else email
-    name = random_lower_string()
-    password = random_lower_string()
-    user_in = UserToRegister(name=name, email=email, password=password)
-    user = crud.create_user(db=session, user=user_in)
-    return user
 
 
 def user_authentication_headers(
