@@ -43,29 +43,6 @@ def authentication_token_from_email(
     return user_authentication_headers(client=client, email=email, password=password)
 
 
-def test_get_all_users(
-        client: TestClient,
-        superuser_token_headers: dict,
-        session: Session,
-        normal_user_token_headers: Dict[str, str]
-) -> None:
-    user_in1 = add_test_user_to_db(session)
-    user_in2 = add_test_user_to_db(session)
-
-    r = client.get("/users", headers=superuser_token_headers)
-    all_users = r.json()
-
-    assert len(all_users) == 4, "Wrong number of User records in the DB"
-    user_names = []
-    for item in all_users:
-        user_names.append(item['name'])
-        assert "email" in item, "Email is missing in User DB record"
-    assert user_in1.name in user_names and user_in2.name in user_names, 'Some of User names are missing'
-
-    r = client.get("/users", headers=normal_user_token_headers)
-    assert r.status_code == 403, 'Non-admin has access to all user profiles'
-
-
 def add_test_user_to_db(session: Session, email: str | None = None) -> User:
     email = random_email() if (email is None) else email
     name = random_lower_string()
