@@ -54,7 +54,7 @@ class User(Base):
     createdAt = Column(TIMESTAMP, default=datetime.utcnow)
     updatedAt = Column(TIMESTAMP, default=datetime.utcnow)
 
-    reviews = relationship('Review', backref='user')
+    reviews = relationship('Review', back_populates='owner')
     products = relationship("Product", back_populates="creator")
     orders = relationship("Order", back_populates="user")
 
