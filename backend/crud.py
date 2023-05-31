@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 from typing import List, Type
 
 from fastapi import Query, HTTPException, status
@@ -9,7 +10,7 @@ import models
 from constants import Product_info
 from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
-from schemas.product import ProductEdit
+from schemas.product import ProductEdit, Product
 from schemas.review import ReviewCreate
 from schemas.user import ProfileUpdate, UserUpdate, UserToRegister, User
 
@@ -55,7 +56,7 @@ def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''
     return dict(products=products_paginated, pages=pages)
 
 
-def get_product(db: Session, product_id: int):
+def get_product(db: Session, product_id: int) -> Product:
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     add_count_reviews(products=product)
     return product
@@ -79,8 +80,9 @@ def create_product(db: Session, creator_id: int):
     return new_product
 
 
-def edit_product(db: Session, new_product: ProductEdit):
+def edit_product(db: Session, new_product: ProductEdit) -> Product:
     update_data = new_product.dict()
+    update_data['updated_on'] = datetime.utcnow()
     db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
     db.commit()
     return get_product(db, product_id=new_product.id)

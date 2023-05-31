@@ -36,6 +36,7 @@ class Product(Base):
     price = Column(Numeric, nullable=False)
     countInStock = Column(Integer, nullable=False)
     created_on = Column(TIMESTAMP, default=datetime.utcnow)
+    updated_on = Column(TIMESTAMP, default=datetime.utcnow)
 
     reviews = relationship("Review", back_populates="product")
     creator_id = Column(Integer, ForeignKey("user.id"))

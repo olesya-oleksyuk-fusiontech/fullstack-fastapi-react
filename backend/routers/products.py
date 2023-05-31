@@ -27,11 +27,13 @@ def read_product(
     return db_product
 
 
-@router.put('/{product_id}', response_model=Product)
+@router.patch('/{product_id}', response_model=Product)
 def edit_product(
         item: ProductEdit, db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user),
 ):
+    if not current_user.isAdmin:
+        raise HTTPException(status_code=403, detail="No permission. Admins only")
     return crud.edit_product(db, new_product=item)
 
 
