@@ -1,4 +1,5 @@
 import math
+from datetime import datetime
 from typing import List, Type
 
 from fastapi import Query, HTTPException, status
@@ -6,11 +7,12 @@ from sqlalchemy import inspect, column
 from sqlalchemy.orm import Session
 
 import models
+from constants import Product_info
 from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
-from schemas.product import ProductEdit
-from schemas.review import ReviewCreate
-from schemas.user import ProfileUpdate, UserUpdate, UserToRegister
+from schemas.product import ProductEdit, Product
+from schemas.review import ReviewCreate, ReviewCreateOut
+from schemas.user import ProfileUpdate, UserUpdate, UserToRegister, User
 
 
 def object_as_dict(obj):
@@ -54,7 +56,7 @@ def get_products(db: Session, skip: int = 0, limit: int = 100, keyword: str = ''
     return dict(products=products_paginated, pages=pages)
 
 
-def get_product(db: Session, product_id: int):
+def get_product(db: Session, product_id: int) -> Product:
     product = db.query(models.Product).filter(models.Product.id == product_id).first()
     add_count_reviews(products=product)
     return product
@@ -62,15 +64,15 @@ def get_product(db: Session, product_id: int):
 
 def create_product(db: Session, creator_id: int):
     new_product = models.Product(
-        name='Наименование',
-        image='images/sample.jpg',
-        brand='Бренд',
-        category='Категория',
-        description='Описание',
-        rating=0,
-        price=0,
-        countInStock=0,
-        creator_id=creator_id
+        name=Product_info.name,
+        image=Product_info.image,
+        brand=Product_info.brand,
+        category=Product_info.category,
+        description=Product_info.description,
+        rating=Product_info.rating,
+        price=Product_info.price,
+        countInStock=Product_info.countInStock,
+        creator_id=creator_id,
     )
     db.add(new_product)
     db.commit()
@@ -78,19 +80,21 @@ def create_product(db: Session, creator_id: int):
     return new_product
 
 
-def edit_product(db: Session, new_product: ProductEdit):
+def edit_product(db: Session, new_product: ProductEdit) -> Product:
     update_data = new_product.dict()
+    update_data['updated_on'] = datetime.utcnow()
     db.query(models.Product).filter(models.Product.id == new_product.id).update(update_data)
     db.commit()
     return get_product(db, product_id=new_product.id)
 
 
-def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id):
+def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id) -> ReviewCreateOut:
     new_review = {**review.dict(), 'product_id': product_id, 'creator_id': creator_id}
     db_review = models.Review(**new_review)
     db.add(db_review)
     db.commit()
     db.refresh(db_review)
+    return db_review
 
 
 def create_user(db: Session, user: UserToRegister):
@@ -105,7 +109,7 @@ def create_user(db: Session, user: UserToRegister):
         db.commit()
         db.refresh(new_user)
     except Exception as e:
-        if e.orig.errno == 1062:
+        if hasattr(e, 'orig') and e.orig.errno == 1062:
             raise HTTPException(status_code=409, detail=e.orig.msg)
         else:
             raise HTTPException(status_code=500, detail='Internal Server Error')
@@ -121,7 +125,7 @@ def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str) -> User:
     user = db.query(models.User).filter(models.User.email == email).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,

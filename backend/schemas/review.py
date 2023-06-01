@@ -1,7 +1,6 @@
-from typing import List, Optional
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, conint
 
 
 class ReviewOwner(BaseModel):
@@ -26,8 +25,16 @@ class Review(BaseModel):
 
 
 class ReviewCreate(BaseModel):
-    rating: int
+    rating: conint(ge=0, le=5)
     comment: str
+
+    class Config:
+        orm_mode = True
+
+
+class ReviewCreateOut(ReviewCreate):
+    product_id: int
+    creator_id: int
 
     class Config:
         orm_mode = True

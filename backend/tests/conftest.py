@@ -6,10 +6,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+import crud
 from config import DB_USER, DB_PASS, DB_HOST, DB_PORT, TEST_DB_NAME
 from core.config import settings
 from database import Base, get_db
 from main import app
+from schemas.user import User
 from tests.utils.user import authentication_token_from_email
 from tests.utils.utils import get_superuser_token_headers
 
@@ -29,7 +31,7 @@ Base.metadata.create_all(bind=engine)
 # recreates it when the application code calls session.commit
 # and rolls it back at the end.
 # Based on: https://docs.sqlalchemy.org/en/14/orm/session_transaction.html#joining-a-session-into-an-external-transaction-such-as-for-test-suites
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def session():
     connection = engine.connect()
     transaction = connection.begin()
@@ -57,7 +59,7 @@ def session():
 # A fixture for the fastapi test client which depends on the previous session fixture.
 # Instead of creating a new session in the dependency override as before,
 # it uses the one provided by the session fixture.
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def client(session):
     def override_get_db():
         yield session
@@ -76,6 +78,20 @@ def superuser_token_headers(client: TestClient) -> Dict[str, str]:
 def normal_user_token_headers(client: TestClient, session: Session) -> Dict[str, str]:
     return authentication_token_from_email(
         client=client,
-        email=settings.EMAIL_TEST_USER,
-        password=settings.EMAIL_TEST_PASSWORD, session=session
+        email=settings.TEST_USER_EMAIL,
+        password=settings.TEST_USER_PASSWORD, session=session
     )
+
+
+@pytest.fixture(scope="module")
+def get_superuser(session: Session) -> User:
+    try:
+        return crud.get_user_by_email(db=session, email=settings.FIRST_SUPERUSER_EMAIL)
+    except Exception as e:
+        if e.status_code == 404:
+            assert False, 'No superuser is found in DB. Inject superuser_token_headers first'
+
+
+pytest_plugins = [
+    "tests.utils.product",
+]

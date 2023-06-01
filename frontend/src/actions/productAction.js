@@ -175,7 +175,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
       },
     };
 
-    const { data } = await axios.put(
+    const { data } = await axios.patch(
       `${baseURL}/products/${product._id}`,
       product,
       config,

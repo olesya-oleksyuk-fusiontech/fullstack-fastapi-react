@@ -7,7 +7,7 @@ import crud
 from auth import oauth2
 from database import get_db
 from schemas.product import Product, ProductsDisplay, ProductEdit
-from schemas.review import ReviewCreate
+from schemas.review import ReviewCreate, ReviewCreateOut
 from schemas.user import User
 
 router = APIRouter(
@@ -27,11 +27,13 @@ def read_product(
     return db_product
 
 
-@router.put('/{product_id}', response_model=Product)
+@router.patch('/{product_id}', response_model=Product)
 def edit_product(
         item: ProductEdit, db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user),
 ):
+    if not current_user.isAdmin:
+        raise HTTPException(status_code=403, detail="No permission. Admins only")
     return crud.edit_product(db, new_product=item)
 
 
@@ -41,9 +43,8 @@ def create_review(
         review: ReviewCreate,
         db: Session = Depends(get_db),
         current_user: User = Depends(oauth2.get_current_user)
-):
-    crud.create_review(db, review, product_id, creator_id=current_user.id)
-    return 'test'
+) -> ReviewCreateOut:
+    return crud.create_review(db, review, product_id, creator_id=current_user.id)
 
 
 @router.post('', response_model=ProductEdit)

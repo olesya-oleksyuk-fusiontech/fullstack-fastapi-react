@@ -14,7 +14,7 @@ class Review(Base):
     __tablename__ = 'review'
     id = Column(Integer, primary_key=True, index=True)
     rating = Column(Integer, nullable=False)
-    comment = Column(String(100))
+    comment = Column(String(5000))
     created_on = Column(DateTime(), default=datetime.utcnow)
 
     product_id = Column(Integer, ForeignKey("product.id"))
@@ -36,6 +36,7 @@ class Product(Base):
     price = Column(Numeric, nullable=False)
     countInStock = Column(Integer, nullable=False)
     created_on = Column(TIMESTAMP, default=datetime.utcnow)
+    updated_on = Column(TIMESTAMP, default=datetime.utcnow)
 
     reviews = relationship("Review", back_populates="product")
     creator_id = Column(Integer, ForeignKey("user.id"))
@@ -115,6 +116,7 @@ class Payment_Details(Base):
     order = relationship("Order", back_populates="payment_details", uselist=False)
     provider_id = Column(Integer, ForeignKey("payment_provider.id"), nullable=False)
     provider = relationship("Payment_Provider", back_populates="orders_payment_details")
+
 
 class Payment_Provider(Base):
     __tablename__ = "payment_provider"
