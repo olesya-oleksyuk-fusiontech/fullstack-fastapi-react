@@ -90,7 +90,7 @@ def test_change_user_info(
         session: Session,
         normal_user_token_headers: Dict[str, str]
 ) -> None:
-    normal_user_old = crud.get_user_by_email(db=session, email=settings.EMAIL_TEST_USER)
+    normal_user_old = crud.get_user_by_email(db=session, email=settings.TEST_USER_EMAIL)
     normal_user_old_data = {"name": normal_user_old.name, "email": normal_user_old.email}
     normal_user_updates = ProfileUpdate(name=random_lower_string())
     r = client.patch("/users/profile", headers=normal_user_token_headers,

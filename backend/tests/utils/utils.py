@@ -5,6 +5,7 @@ from typing import Dict
 from fastapi.testclient import TestClient
 
 from core.config import settings
+from schemas.user import UserRegistered
 
 
 def random_lower_string() -> str:
@@ -15,7 +16,7 @@ def random_email() -> str:
     return f"{random_lower_string()}@{random_lower_string()}.com"
 
 
-def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
+def create_superuser(client: TestClient) -> UserRegistered:
     login_data = {
         "name": settings.FIRST_SUPERUSER_NAME,
         "email": settings.FIRST_SUPERUSER_EMAIL,
@@ -23,8 +24,12 @@ def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
         "isAdmin": True
     }
     response = client.post("/users", json=login_data)
-    tokens = response.json()
-    a_token = tokens["access_token"]
+    return response.json()
+
+
+def get_superuser_token_headers(client: TestClient) -> Dict[str, str]:
+    superuser = create_superuser(client)
+    a_token = superuser['access_token']
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
 
