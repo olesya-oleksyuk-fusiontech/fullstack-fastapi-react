@@ -39,7 +39,7 @@ class ProductOnAdminList(ProductEdit):
 
 class Product(ProductOnAdminList):
     created_on: datetime
-    updated_on: datetime
+    updated_on: Optional[datetime]
     reviews: Optional[List[ReviewReadWithProduct]] = []
     # admin who add the product
     creator: ReviewCreator = None
