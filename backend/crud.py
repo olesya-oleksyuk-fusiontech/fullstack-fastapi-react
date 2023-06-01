@@ -11,7 +11,7 @@ from constants import Product_info
 from hash import Hash
 from schemas.orders import OrderCreate, PaymentResult, DeliveryResult
 from schemas.product import ProductEdit, Product
-from schemas.review import ReviewCreate
+from schemas.review import ReviewCreate, ReviewCreateOut
 from schemas.user import ProfileUpdate, UserUpdate, UserToRegister, User
 
 
@@ -88,12 +88,13 @@ def edit_product(db: Session, new_product: ProductEdit) -> Product:
     return get_product(db, product_id=new_product.id)
 
 
-def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id):
+def create_review(db: Session, review: ReviewCreate, product_id: int, creator_id: id) -> ReviewCreateOut:
     new_review = {**review.dict(), 'product_id': product_id, 'creator_id': creator_id}
     db_review = models.Review(**new_review)
     db.add(db_review)
     db.commit()
     db.refresh(db_review)
+    return db_review
 
 
 def create_user(db: Session, user: UserToRegister):

@@ -10,10 +10,17 @@ from schemas.product import Product
 from tests.utils.utils import create_superuser
 
 
-def create_random_product(session: Session, *, creator_id: Optional[int] = None) -> Product:
+def create_random_product(session: Session, client: TestClient, *, creator_id: Optional[int] = None) -> Product:
     if creator_id is None:
-        user = add_test_user_to_db(session)
-        creator_id = user.id
+        try:
+            creator = crud.get_user_by_email(db=session, email=settings.FIRST_SUPERUSER_EMAIL)
+            return crud.create_product(db=session, creator_id=creator.id)
+        except Exception as e:
+            if hasattr(e, 'status_code') and e.status_code == 404:
+                superuser = create_superuser(client)
+                return crud.create_product(db=session, creator_id=superuser['id'])
+        superuser = create_superuser(client)
+        creator_id = superuser.id
     return crud.create_product(db=session, creator_id=creator_id)
 
 
